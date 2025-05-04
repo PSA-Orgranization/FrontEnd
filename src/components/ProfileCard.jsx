@@ -38,9 +38,9 @@ export default function ProfileCard({ isOpen, onClose, user }) {
       />
 
       <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-10">
-        <div className="bg-[#041B2D] w-full h-full md:h-auto md:max-h-[90vh] md:max-w-2xl md:rounded-lg shadow-lg overflow-y-auto">
+        <div className="bg-[#041B2D] w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:rounded-lg shadow-lg overflow-y-auto">
           {/* Header */}
-          <div className="flex justify-between items-center  px-4 md:px-8 py-5 border-b border-white-800 sticky top-0  z-10">
+          <div className="flex justify-between items-center  px-4 md:px-8 py-5 border-b border-white-400 sticky top-0  z-10">
             <h2 className="text-xl font-medium text-white">Profile</h2>
             <Button onClick={onClose} className="text-gray-400 p-1">
               <X size={20} />
@@ -70,12 +70,39 @@ export default function ProfileCard({ isOpen, onClose, user }) {
             {/* Handles */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-16">
               <div>
-                <div className="mb-4 md:mb-2 relative">
-                  <div className="flex items-center justify-between border-b border-gray-700 pb-1">
+                <div className="mb-4 md:mb-4 relative">
+                  <div className="flex items-center justify-between border-b border-gray-700 mb-4 pb-1">
                     <span className="text-gray-400">Code forces handle</span>
                     <Button className="text-gray-400 p-0.5">
                       <X size={16} />
                     </Button>
+                  </div>
+                  <div
+                    className="flex text-sm items-center text-white cursor-pointer my-2 transition-all duration-200 
+               hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0
+               border border-transparent hover:border-blue-500/30"
+                    onClick={() => setLevelModalOpen(true)}
+                  >
+                    <span className="text-gray-200 group-hover:text-white">
+                      Problems solved for each level{" "}
+                    </span>
+                    <span className="ml-auto text-blue-400 group-hover:text-white">
+                      ▶
+                    </span>
+                  </div>
+
+                  <div
+                    className="flex text-sm items-center text-white cursor-pointer transition-all duration-200 
+               hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0 
+               border border-transparent hover:border-blue-500/30"
+                    onClick={() => setProblemsModalOpen(true)}
+                  >
+                    <span className="text-gray-200 group-hover:text-white">
+                      Problems solved for each Type of contests{" "}
+                    </span>
+                    <span className="ml-auto text-blue-400 group-hover:text-white">
+                      ▶
+                    </span>
                   </div>
                 </div>
               </div>
@@ -88,54 +115,21 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                       <X size={16} />
                     </Button>
                   </div>
+                  <div
+                    className="flex  text-sm items-center text-white cursor-pointer transition-all my-2 duration-200 
+               hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0 
+               border border-transparent hover:border-blue-500/30"
+                    onClick={() => setTagModalOpen(true)}
+                  >
+                    <span className="text-gray-200 group-hover:text-white">
+                      Problems solved for each Tag{" "}
+                    </span>
+                    <span className="ml-auto text-blue-400 group-hover:text-white">
+                      ▶
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Statistics */}
-          <div className="my-4 md:my-8 space-y-2 px-2 md:px-0">
-            <div
-              className="flex items-center text-white cursor-pointer transition-all duration-200 
-               hover:bg-blue-800/50 hover:shadow-md rounded-lg py-3 px-4 mx-0 md:mx-2
-               border border-transparent hover:border-blue-500/30"
-              onClick={() => setLevelModalOpen(true)}
-            >
-              <span className="text-gray-200 group-hover:text-white">
-                Problems solved for each level{" "}
-                <span className="text-red-400">(CF)</span>
-              </span>
-              <span className="ml-auto text-blue-400 group-hover:text-white">
-                ▶
-              </span>
-            </div>
-            <div
-              className="flex items-center text-white cursor-pointer transition-all duration-200 
-               hover:bg-blue-800/50 hover:shadow-md rounded-lg py-3 px-4 mx-0 md:mx-2
-               border border-transparent hover:border-blue-500/30"
-              onClick={() => setProblemsModalOpen(true)}
-            >
-              <span className="text-gray-200 group-hover:text-white">
-                Problems solved for each Type of contests{" "}
-                <span className="text-red-400">(AT Coder)</span>
-              </span>
-              <span className="ml-auto text-blue-400 group-hover:text-white">
-                ▶
-              </span>
-            </div>
-            <div
-              className="flex items-center text-white cursor-pointer transition-all duration-200 
-               hover:bg-blue-800/50 hover:shadow-md rounded-lg py-3 px-4 mx-0 md:mx-2
-               border border-transparent hover:border-blue-500/30"
-              onClick={() => setTagModalOpen(true)}
-            >
-              <span className="text-gray-200 group-hover:text-white">
-                Problems solved for each Tag{" "}
-                <span className="text-red-400">(CF)</span>
-              </span>
-              <span className="ml-auto text-blue-400 group-hover:text-white">
-                ▶
-              </span>
             </div>
           </div>
         </div>

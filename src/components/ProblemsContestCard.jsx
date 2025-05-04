@@ -66,7 +66,7 @@ export default function ProblemsContestCard({ isOpen, onClose }) {
               <h3 className="text-white text-md mb-3 md:mb-4">
                 {contest.name}
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-2 md:gap-x-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-2 md:gap-x-8">
                 {contest.problems.map((problem) => (
                   <div
                     key={problem}

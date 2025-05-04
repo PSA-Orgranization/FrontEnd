@@ -7,7 +7,6 @@ export default function ProblemsLevelCard({ isOpen, onClose, title }) {
 
   // Sample data for problems solved by level
   const levelData = {
-    // First column
     800: 5,
     900: 3,
     1000: 7,
@@ -18,7 +17,6 @@ export default function ProblemsLevelCard({ isOpen, onClose, title }) {
     1500: 6,
     1600: 2,
     1700: 4,
-    // Second column
     1800: 3,
     1900: 2,
     2000: 1,
@@ -29,7 +27,6 @@ export default function ProblemsLevelCard({ isOpen, onClose, title }) {
     2500: 0,
     2600: 3,
     2700: 1,
-    // Third column
     2800: 2,
     2900: 0,
     3000: 1,
@@ -43,16 +40,17 @@ export default function ProblemsLevelCard({ isOpen, onClose, title }) {
   // Function to render the levels in columns
   const renderLevels = () => {
     const levels = Object.keys(levelData);
-    const itemsPerColumn = Math.ceil(levels.length / 3);
+    const itemsPerColumn = Math.ceil(levels.length / 4);
 
     const columns = [
       levels.slice(0, itemsPerColumn),
       levels.slice(itemsPerColumn, itemsPerColumn * 2),
-      levels.slice(itemsPerColumn * 2),
+      levels.slice(itemsPerColumn * 2, itemsPerColumn * 3),
+      levels.slice(itemsPerColumn * 3),
     ];
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
         {columns.map((column, colIndex) => (
           <div key={colIndex} className="space-y-2 md:space-y-3">
             {column.map((level) => (
@@ -73,7 +71,7 @@ export default function ProblemsLevelCard({ isOpen, onClose, title }) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-[#041B2D] w-full h-full md:h-auto md:max-h-[90vh] md:max-w-2xl md:rounded-lg shadow-lg overflow-y-auto">
+      <div className="bg-[#041B2D] w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:rounded-lg overflow-y-auto">
         {/* Header - made sticky for mobile scrolling */}
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-700 sticky top-0 bg-[#041B2D] z-10">
           <div className="flex items-center">
