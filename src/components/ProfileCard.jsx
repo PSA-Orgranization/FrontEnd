@@ -5,6 +5,7 @@ import { useState } from "react";
 import ProblemsContestCard from "./ProblemsContestCard";
 import ProblemsTagCard from "./ProblemsTagCard";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ProfileCard({ isOpen, onClose, user }) {
   if (!isOpen) return null;
@@ -12,12 +13,29 @@ export default function ProfileCard({ isOpen, onClose, user }) {
   const [problemsModalOpen, setProblemsModalOpen] = useState(false);
   const [levelModalOpen, setLevelModalOpen] = useState(false);
   const [tagModalOpen, setTagModalOpen] = useState(false);
+  const router = useRouter();
 
-  // Default user data if not provided
-  const userData = user || {
-    email: "User@gmail.com",
-    codeHandle: "Code forces handle",
-    aiCoderHandle: "AT Coder handle",
+  // Get username and email from localStorage
+  const userData = {
+    username:
+      typeof window !== "undefined" ? localStorage.getItem("username") : "",
+    email: typeof window !== "undefined" ? localStorage.getItem("email") : "",
+  };
+
+  // Function to clear authentication-related localStorage items
+  const clearAuthStorage = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("first_name");
+    localStorage.removeItem("last_name");
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    clearAuthStorage();
+    router.push("/");
   };
 
   return (
@@ -52,15 +70,19 @@ export default function ProfileCard({ isOpen, onClose, user }) {
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <div>
                 <div className="flex items-center mb-1">
-                  <h3 className="text-lg font-medium text-white">User</h3>
-                  <Link href="/">
+                  <h3 className="text-lg font-medium text-white">
+                    {userData.username || "User"}
+                  </h3>
+                  <a href="/" onClick={handleLogout}>
                     <LogOut
                       size={16}
                       className="ml-2 text-gray-400 hover:text-white cursor-pointer"
                     />
-                  </Link>
+                  </a>
                 </div>
-                <p className="text-sm text-gray-400">{userData.email}</p>
+                <p className="text-sm text-gray-400">
+                  {userData.email || "Email not found"}
+                </p>
               </div>
               <Button className="px-4 py-2 bg-blue-900 text-white text-sm rounded-md hover:bg-blue-800 cursor-pointer w-full md:w-auto">
                 Reset Password

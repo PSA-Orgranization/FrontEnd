@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
 
 export const customStyle = {
@@ -8,7 +9,10 @@ export const customStyle = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" style={{ height: "100%", margin: 0 }}>
-      <body style={{ ...customStyle }}>{children}</body>
+      <body style={{ ...customStyle }}>
+        <ToastContainer />
+        {children}
+      </body>
     </html>
   );
 }

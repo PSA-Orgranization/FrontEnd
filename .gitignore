@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# cursor
+.cursor
+
+PSA.postman_collection.json
+
+login.txt
+Thumbs.db
+.vscode/
+

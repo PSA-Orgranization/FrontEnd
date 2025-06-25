@@ -98,7 +98,7 @@ export default function ChatPage() {
     <div className="flex h-screen text-white">
       {/* Mobile Bottom Nav */}
       <div
-        className={`fixed md:hidden fixed bottom-0 left-0 right-0 border-t border-gray-800 flex justify-around items-center h-16 z-40 shadow-t-lg ${
+        className={`fixed md:hidden bottom-0 left-0 right-0 border-t border-gray-800 flex justify-around items-center h-16 z-40 shadow-t-lg ${
           sidebarOpen ? "bg-[#071830] " : "bg-transparent"
         }`}
       >
@@ -178,7 +178,7 @@ export default function ChatPage() {
         <div className="m-3">
           <Link href="/chat">
             <Button
-              className="sm:w-full hover:bg-blue-700 py-3 px-4 rounded-md text-left hover:bg-blue-800"
+              className="sm:w-full py-3 px-4 rounded-md text-left hover:bg-blue-800"
               backGround="bg-[#082540]"
               onClick={toggleSidebar}
             >
@@ -246,7 +246,7 @@ export default function ChatPage() {
             </div>
           </button>
 
-          <div className="flex md:flex hidden">
+          <div className="md:flex hidden">
             <UserCircle
               className="h-6 w-6 text-white mr-4 cursor-pointer"
               onClick={() => setProfileOpen(true)}

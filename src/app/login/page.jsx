@@ -3,12 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import Button from "@/components/Button";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,10 +23,53 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  // Function to clear authentication-related localStorage items
+  const clearAuthStorage = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("first_name");
+    localStorage.removeItem("last_name");
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log("Form submitted:", formData);
+    clearAuthStorage(); // Clear localStorage before login
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login/`,
+        {
+          username_or_email: formData.email,
+          password: formData.password,
+        }
+      );
+      const result = response.data;
+
+      if (response.status === 200 && result.status === 200) {
+        const { access, refresh, user } = result.data;
+        // Save tokens and user info to localStorage
+        localStorage.setItem("access_token", access);
+        localStorage.setItem("refresh_token", refresh);
+        localStorage.setItem("username", user.username);
+        localStorage.setItem("email", user.email);
+        localStorage.setItem("first_name", user.first_name);
+        localStorage.setItem("last_name", user.last_name);
+        // Redirect to /chat after successful login
+        router.push("/chat");
+      } else {
+        toast.error(result.message || "Login failed. Please try again.");
+      }
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        toast.error(err.response.data.message);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,20 +84,20 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
-              htmlFor="username"
+              htmlFor="email"
               className="block text-md font-medium mb-2 sm:mb-1"
             >
-              Username
+              Email
             </label>
             <input
               type="text"
-              id="username"
-              name="username"
-              value={formData.username}
+              id="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
               className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
               style={{ backgroundColor: "#1B3A5D" }}
-              placeholder="Username"
+              placeholder="Email"
               required
             />
           </div>
@@ -79,8 +127,10 @@ export default function Login() {
               backGround="bg-blue-500"
               className="px-8 py-3 sm:px-8 sm:py-4 rounded-4xl text-xl sm:text-2xl"
               style={{ backgroundColor: "#438BD3" }}
+              type="submit"
+              disabled={loading}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </div>
         </form>

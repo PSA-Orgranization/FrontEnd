@@ -1,12 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Button from "@/components/Button";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function OTPVerification() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [email, setEmail] = useState("user@example.com"); // Pre-filled with example
+  const [Email, setEmail] = useState("");
+  const router = useRouter();
+
+  // On mount, get registration data from sessionStorage
+  useEffect(() => {
+    const regData = sessionStorage.getItem("registrationData");
+    if (regData) {
+      const parsed = JSON.parse(regData);
+      setEmail(parsed.email);
+    }
+  }, []);
 
   const handleOtpChange = (index, value) => {
     if (/^\d*$/.test(value) && value.length <= 1) {
@@ -21,11 +34,65 @@ export default function OTPVerification() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const fullOtp = otp.join("");
-    console.log("Submitted OTP:", fullOtp);
-    // Add your OTP verification logic here
+    if (fullOtp.length !== 6) {
+      toast.error("Please enter the 6-digit OTP.");
+      return;
+    }
+    try {
+      // 1. Verify OTP
+      const otpFormData = new FormData();
+      otpFormData.append("email", Email);
+      otpFormData.append("otp", fullOtp);
+
+      const verifyRes = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/otp/`,
+        otpFormData
+      );
+
+      console.log("OTP Verification Response:", verifyRes);
+
+      if (verifyRes.status === 200) {
+        // 2. Get registration data from sessionStorage
+        const regData = sessionStorage.getItem("registrationData");
+        if (!regData) {
+          toast.error("Registration data not found. Please register again.");
+          router.push("/register");
+          return;
+        }
+        const formData = JSON.parse(regData);
+        // 3. Register user using FormData
+        const registerFormData = new FormData();
+        registerFormData.append("username", formData.username);
+        registerFormData.append("email", formData.email);
+        registerFormData.append("password", formData.password);
+        registerFormData.append("first_name", formData.firstName);
+        registerFormData.append("last_name", formData.lastName);
+        const regRes = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register/`,
+          registerFormData
+        );
+        if (regRes.status === 200) {
+          toast.success("Registration successful! Please login.");
+          sessionStorage.removeItem("registrationData");
+          router.push("/login");
+        } else {
+          toast.error(regRes.data?.message || "Registration failed.");
+        }
+      } else {
+        toast.error(verifyRes.data?.message || "Invalid OTP.");
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(
+          error.response.data.message || "Error during registration."
+        );
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+    }
   };
 
   return (
@@ -58,15 +125,13 @@ export default function OTPVerification() {
           </p>
 
           <div className="flex justify-center">
-            <Link href="/chat">
-              <Button
-                type="submit"
-                className="text-white font-medium py-3 px-4"
-                style={{ backgroundColor: "#438BD3" }}
-              >
-                Done
-              </Button>
-            </Link>
+            <Button
+              type="submit"
+              className="text-white font-medium py-3 px-4"
+              style={{ backgroundColor: "#438BD3" }}
+            >
+              Done
+            </Button>
           </div>
         </form>
       </div>
