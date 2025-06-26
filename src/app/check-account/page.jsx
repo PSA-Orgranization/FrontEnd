@@ -29,7 +29,7 @@ export default function ResetPassword() {
         style={{ backgroundColor: "#082540" }}
       >
         <form onSubmit={handleSubmit} className="space-y-6">
-          <h2 className="text-center text-xl font-medium mb-4">
+          <h2 className="text-center text-sm sm:text-xl font-medium mb-4">
             Enter your Email to reset the password
           </h2>
 
@@ -56,7 +56,7 @@ export default function ResetPassword() {
           <div className="text-center mt-8">
             <Button
               backGround="bg-blue-500"
-              className="px-5 py-3 sm:px-8 sm:py-4 rounded-4xl text-xl sm:text-2xl w-8/12"
+              className="px-5 py-3 sm:px-8 sm:py-4 rounded-4xl text-lg sm:text-2xl w-8/12"
               style={{ backgroundColor: "#438BD3" }}
             >
               Check account

@@ -81,7 +81,7 @@ export default function NewPassword() {
           <div className="text-center mt-8">
             <Button
               backGround="bg-blue-500"
-              className="px-5 py-3 sm:px-8 sm:py-4 rounded-4xl text-xl sm:text-2xl w-8/12"
+              className="px-5 py-3 sm:px-8 sm:py-4 rounded-4xl text-lg sm:text-2xl w-8/12"
               style={{ backgroundColor: "#438BD3" }}
             >
               Reset Password

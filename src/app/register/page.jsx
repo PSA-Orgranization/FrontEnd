@@ -6,6 +6,7 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -17,11 +18,13 @@ export default function Register() {
     confirmPassword: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const router = useRouter();
 
   const validateUsername = (username, email) => {
     // Rule 1: Allowed characters
-
     const allowedPattern = /^[\w.@+-]+$/;
     if (!allowedPattern.test(username)) {
       toast.error(
@@ -112,7 +115,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
-      <div className="flex justify-center mb-12">
+      <div className="flex justify-center mb-12 pt-10">
         <img src="/PSA-Logo.svg" alt="PSA Logo" className="w-52 h-52" />
       </div>
       <div
@@ -205,17 +208,30 @@ export default function Register() {
               >
                 Password
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-                style={{ backgroundColor: "#1B3A5D" }}
-                placeholder="Password"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
+                  style={{ backgroundColor: "#1B3A5D" }}
+                  placeholder="Password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                  {showPassword ? (
+                    <AiOutlineEye className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
+                  ) : (
+                    <AiOutlineEyeInvisible className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <div>
@@ -225,17 +241,30 @@ export default function Register() {
               >
                 Confirm Password
               </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-                style={{ backgroundColor: "#1B3A5D" }}
-                placeholder="Confirm Password"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
+                  style={{ backgroundColor: "#1B3A5D" }}
+                  placeholder="Confirm Password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                  {showConfirmPassword ? (
+                    <AiOutlineEye className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
+                  ) : (
+                    <AiOutlineEyeInvisible className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -250,7 +279,7 @@ export default function Register() {
           </div>
         </form>
       </div>
-      <div className="text-center mt-2 text-sm">
+      <div className="text-center mt-2 text-sm pb-10">
         <p className="text-white">
           Do you have an account?
           <Link

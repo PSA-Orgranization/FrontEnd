@@ -6,7 +6,7 @@ import Link from "next/link";
 import {
   UserCircle,
   Settings,
-  SendHorizonal,
+  SendHorizontal,
   MessageSquare,
   ChevronLeft,
 } from "lucide-react";
@@ -316,7 +316,7 @@ export default function ChatPage() {
                       </li>
                     </ol>
                     <p>
-                      Chatbots Can Assist With FAQs, Troubleshooting, And
+                      Chat bots Can Assist With FAQs, Troubleshooting, And
                       Automation Tasks.
                     </p>
                   </div>
@@ -349,7 +349,7 @@ export default function ChatPage() {
               className="bg-gray-800/90 rounded-r-full px-6 py-4 flex items-center justify-center"
               style={{ backgroundColor: "#1E2933" }}
             >
-              <SendHorizonal className="h-4 w-4 text-gray-400" />
+              <SendHorizontal className="h-4 w-4 text-gray-400 cursor-pointer" />
             </button>
           </form>
         </div>

@@ -98,7 +98,7 @@ export default function OTPVerification() {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center p-4">
       <div
-        className="w-full max-w-md rounded-4xl shadow-md p-8"
+        className="w-full max-w-sm rounded-4xl shadow-md p-8"
         style={{ backgroundColor: "#082540" }}
       >
         <h1 className="text-2xl font-bold text-center text-white mb-6">OTP</h1>
@@ -113,7 +113,7 @@ export default function OTPVerification() {
                 maxLength={1}
                 value={digit}
                 onChange={(e) => handleOtpChange(index, e.target.value)}
-                className="w-12 h-12 border-2 border-gray-300 bg-white rounded-md text-center text-xl focus:border-blue-500 focus:outline-none"
+                className="w-10 h-10 border-2 border-gray-300 bg-white rounded-md text-center text-xl focus:border-blue-500 focus:outline-none"
                 inputMode="numeric"
                 pattern="[0-9]*"
               />

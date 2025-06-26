@@ -96,9 +96,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden sm:bg-[url('/Background.svg')] bg-center">
-      <div className="z-10 flex flex-col items-center">
+      <div className="z-10 flex flex-col items-center pb-10">
         <div className="w-64 h-64 rounded-full flex items-center justify-center mb-8">
-          <img src="/PSA-Logo.svg" alt="PSA Logo" className="w-64 h-64" />
+          <img src="/PSA-Logo.svg" alt="PSA Logo" className="w-52 h-52" />
         </div>
         <h1
           className={`text-9xl tracking-wider text-blue-200 mb-2 hidden sm:block ${anta.className}`}
@@ -106,7 +106,7 @@ export default function Home() {
           PS<span className="text-pink-300">A</span>
         </h1>
         <h2
-          className={`text-3xl text-blue-200 mb-12 tracking-widest text-center ${anuphan.className}`}
+          className={`text-2xl text-blue-200 mb-12 tracking-widest text-center ${anuphan.className}`}
         >
           Problem Solving <span className="block text-pink-300">Assistant</span>
         </h2>

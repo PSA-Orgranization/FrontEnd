@@ -6,6 +6,7 @@ import Button from "@/components/Button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ export default function Login() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -74,7 +76,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
-      <div className="flex justify-center mb-12">
+      <div className="flex justify-center mb-12 pt-10">
         <img src="/PSA-Logo.svg" alt="PSA Logo" className="w-52 h-52" />
       </div>
       <div
@@ -109,17 +111,30 @@ export default function Login() {
             >
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-              style={{ backgroundColor: "#1B3A5D" }}
-              placeholder="Password"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
+                style={{ backgroundColor: "#1B3A5D" }}
+                placeholder="Password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                {showPassword ? (
+                  <AiOutlineEye className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
+                ) : (
+                  <AiOutlineEyeInvisible className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="text-center mt-6">
@@ -135,7 +150,7 @@ export default function Login() {
           </div>
         </form>
       </div>
-      <div className="text-center mt-2 text-sm space-y-1">
+      <div className="text-center mt-2 text-sm space-y-1 pb-10">
         <p className="text-white">
           Don't have an account?{" "}
           <Link href="/register" className="text-blue-400 hover:text-blue-300">

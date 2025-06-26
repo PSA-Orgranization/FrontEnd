@@ -8,7 +8,7 @@ export const customStyle = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" style={{ height: "100%", margin: 0 }}>
+    <html lang="en">
       <body style={{ ...customStyle }}>
         <ToastContainer />
         {children}
