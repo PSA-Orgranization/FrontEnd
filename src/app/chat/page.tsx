@@ -14,6 +14,7 @@ import Button from "@/components/Button";
 import SettingsCard from "@/components/SettingsCard";
 import ProfileCard from "@/components/ProfileCard";
 import { customStyle } from "../layout";
+import Image from "next/image";
 
 // Helper component for chat history items
 const ChatHistoryItem = ({ text, date }) => (
@@ -242,7 +243,13 @@ export default function ChatPage() {
           {/* Logo + Toggle Button */}
           <button onClick={toggleSidebar} className="cursor-pointer">
             <div className="w-12 h-12 rounded-full flex items-center justify-center">
-              <img src="/PSA-Logo.svg" alt="PSA Logo" className="w-12 h-12" />
+              <Image
+                src="/PSA-Logo.svg"
+                alt="PSA Logo"
+                width={48}
+                height={48}
+                className="w-12 h-12"
+              />
             </div>
           </button>
 
@@ -286,7 +293,7 @@ export default function ChatPage() {
             <div className="flex flex-col items-start">
               <div className="flex flex-col items-start">
                 <div className="bg-blue-800 rounded-full h-6 w-6 md:h-10 md:w-10 flex items-center justify-center mb-2">
-                  <img src="/PSA-Logo.svg" alt="Bot" />
+                  <Image src="/PSA-Logo.svg" alt="Bot" width={48} height={48} />
                 </div>
                 <div
                   className="py-2 px-3 rounded-2xl rounded-tl-none max-w-xs md:max-w-2xl"
@@ -304,7 +311,7 @@ export default function ChatPage() {
                         Information Or Actions.
                       </li>
                       <li>
-                        Clarify If Needed – If The Response Isn't Accurate,
+                        Clarify If Needed – If The Response Isn&apos;t Accurate,
                         Refine Your Input.
                       </li>
                       <li>
@@ -312,7 +319,7 @@ export default function ChatPage() {
                         Steps Or Provide Links.
                       </li>
                       <li>
-                        End The Session – Close The Chat When You're Done.
+                        End The Session – Close The Chat When You&apos;re Done.
                       </li>
                     </ol>
                     <p>

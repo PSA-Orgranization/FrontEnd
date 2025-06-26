@@ -7,6 +7,7 @@ import Button from "@/components/Button";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import Image from "next/image";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -117,7 +118,13 @@ export default function Register() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="flex justify-center mb-12 pt-10">
-        <img src="/PSA-Logo.svg" alt="PSA Logo" className="w-52 h-52" />
+        <Image
+          src="/PSA-Logo.svg"
+          alt="PSA Logo"
+          width={208}
+          height={208}
+          className="w-52 h-52"
+        />
       </div>
       <div
         className="w-4/5 sm:w-full max-w-3xl py-7 px-4 sm:p-7 rounded-4xl text-white shadow-xl"

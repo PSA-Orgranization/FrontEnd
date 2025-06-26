@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Image from "next/image";
 
 const anta = Anta({
   weight: "400",
@@ -98,7 +99,13 @@ export default function Home() {
     <div className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden sm:bg-[url('/Background.svg')] bg-center">
       <div className="z-10 flex flex-col items-center pb-10">
         <div className="w-64 h-64 rounded-full flex items-center justify-center mb-8">
-          <img src="/PSA-Logo.svg" alt="PSA Logo" className="w-52 h-52" />
+          <Image
+            src="/PSA-Logo.svg"
+            alt="PSA Logo"
+            width={208}
+            height={208}
+            className="w-52 h-52"
+          />
         </div>
         <h1
           className={`text-9xl tracking-wider text-blue-200 mb-2 hidden sm:block ${anta.className}`}

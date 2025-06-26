@@ -8,8 +8,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function ProfileCard({ isOpen, onClose, user }) {
-  if (!isOpen) return null;
-
   const [problemsModalOpen, setProblemsModalOpen] = useState(false);
   const [levelModalOpen, setLevelModalOpen] = useState(false);
   const [tagModalOpen, setTagModalOpen] = useState(false);
@@ -38,7 +36,7 @@ export default function ProfileCard({ isOpen, onClose, user }) {
     router.push("/");
   };
 
-  return (
+  return !isOpen ? null : (
     <>
       <ProblemsContestCard
         isOpen={problemsModalOpen}
@@ -73,12 +71,12 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                   <h3 className="text-lg font-medium text-white">
                     {userData.username || "User"}
                   </h3>
-                  <a href="/" onClick={handleLogout}>
+                  <Link href="/" onClick={handleLogout}>
                     <LogOut
                       size={16}
                       className="ml-2 text-gray-400 hover:text-white cursor-pointer"
                     />
-                  </a>
+                  </Link>
                 </div>
                 <p className="text-sm text-gray-400">
                   {userData.email || "Email not found"}
@@ -101,8 +99,8 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                   </div>
                   <div
                     className="flex text-sm items-center text-white cursor-pointer my-2 transition-all duration-200 
-               hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0
-               border border-transparent hover:border-blue-500/30"
+                 hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0
+                 border border-transparent hover:border-blue-500/30"
                     onClick={() => setLevelModalOpen(true)}
                   >
                     <span className="text-gray-200 group-hover:text-white">
@@ -115,8 +113,8 @@ export default function ProfileCard({ isOpen, onClose, user }) {
 
                   <div
                     className="flex text-sm items-center text-white cursor-pointer transition-all duration-200 
-               hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0 
-               border border-transparent hover:border-blue-500/30"
+                 hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0 
+                 border border-transparent hover:border-blue-500/30"
                     onClick={() => setProblemsModalOpen(true)}
                   >
                     <span className="text-gray-200 group-hover:text-white">
@@ -139,8 +137,8 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                   </div>
                   <div
                     className="flex  text-sm items-center text-white cursor-pointer transition-all my-2 duration-200 
-               hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0 
-               border border-transparent hover:border-blue-500/30"
+                 hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0 
+                 border border-transparent hover:border-blue-500/30"
                     onClick={() => setTagModalOpen(true)}
                   >
                     <span className="text-gray-200 group-hover:text-white">
