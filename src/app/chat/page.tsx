@@ -36,7 +36,7 @@ export default function ChatPage() {
       setIsMobile(isMobileView);
 
       // Only auto-close sidebar on initial load for mobile
-      if (isMobileView && !document.readyState !== "complete") {
+      if (isMobileView && document.readyState !== "complete") {
         setSidebarOpen(false);
       }
     };

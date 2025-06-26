@@ -1,7 +1,13 @@
 // components/ProblemsTagCard.jsx
 import { ArrowLeft } from "lucide-react";
 
-export default function ProblemsTagCard({ isOpen, onClose, title }) {
+export default function ProblemsTagCard({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   if (!isOpen) return null;
 
   // Sample data for problems solved by tag (matching the image)

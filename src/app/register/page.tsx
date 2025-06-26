@@ -20,6 +20,7 @@ export default function Register() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -69,23 +70,21 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsSubmitting(true);
     if (!validateUsername(formData.username, formData.email)) {
+      setIsSubmitting(false);
       return;
     }
     if (!validatePassword(formData.password, formData.confirmPassword)) {
+      setIsSubmitting(false);
       return;
     }
 
     try {
-      console.log("Sending OTP to email:", formData.email);
-
       const otpResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/otp/`,
         { email: formData.email }
       );
-
-      console.log("OTP Response:", otpResponse);
 
       if (otpResponse.status === 200) {
         // Store registration data in sessionStorage (stringify for storage)
@@ -103,6 +102,7 @@ export default function Register() {
         router.push("/send-otp");
       } else {
         toast.error(otpResponse.data?.message || "Failed to send OTP.");
+        setIsSubmitting(false);
       }
     } catch (error) {
       if (error.response) {
@@ -110,6 +110,7 @@ export default function Register() {
       } else {
         toast.error("An error occurred. Please try again.");
       }
+      setIsSubmitting(false);
     }
   };
 
@@ -273,8 +274,9 @@ export default function Register() {
               backGround="bg-blue-500  "
               className="px-5 py-3 sm:px-8 sm:py-4 rounded-4xl text-xl sm:text-2xl "
               style={{ backgroundColor: "#438BD3" }}
+              disabled={isSubmitting}
             >
-              Register
+              {isSubmitting ? "Sending OTP..." : "Register"}
             </Button>
           </div>
         </form>

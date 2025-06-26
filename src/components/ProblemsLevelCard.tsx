@@ -2,7 +2,13 @@
 import { X, ArrowLeft } from "lucide-react";
 import Button from "./Button";
 
-export default function ProblemsLevelCard({ isOpen, onClose, title }) {
+export default function ProblemsLevelCard({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   if (!isOpen) return null;
 
   // Sample data for problems solved by level

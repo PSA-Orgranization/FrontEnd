@@ -22,16 +22,20 @@
 
 # misc
 .DS_Store
+Thumbs.db
+.vscode/
+.cursor/
 *.pem
 
-# debug
+# debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files
+.env
+.env.*
 
 # vercel
 .vercel
@@ -40,12 +44,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# cursor
-.cursor
-
+# Local files
 PSA.postman_collection.json
-
 login.txt
-Thumbs.db
-.vscode/
 

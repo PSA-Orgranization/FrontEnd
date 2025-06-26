@@ -11,6 +11,7 @@ export default function OTPVerification() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [Email, setEmail] = useState("");
   const router = useRouter();
+  const [isVerifying, setIsVerifying] = useState(false);
 
   // On mount, get registration data from sessionStorage
   useEffect(() => {
@@ -34,11 +35,51 @@ export default function OTPVerification() {
     }
   };
 
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace") {
+      if (otp[index] === "") {
+        if (index > 0) {
+          const prevInput = document.getElementById(`otp-${index - 1}`);
+          if (prevInput) prevInput.focus();
+          const newOtp = [...otp];
+          newOtp[index - 1] = "";
+          setOtp(newOtp);
+        }
+        e.preventDefault();
+      } else {
+        // Clear current field
+        const newOtp = [...otp];
+        newOtp[index] = "";
+        setOtp(newOtp);
+        e.preventDefault();
+      }
+    }
+  };
+
+  const handlePaste = (e) => {
+    const paste = e.clipboardData.getData("text").replace(/\D/g, "");
+    if (paste.length === 6) {
+      const otpArr = paste.split("").slice(0, 6);
+      setOtp(otpArr);
+      setIsVerifying(true);
+      // Auto-submit after state update
+      setTimeout(() => {
+        const form = document.getElementById("otp-form");
+        if (form && form instanceof HTMLFormElement) {
+          form.requestSubmit();
+        }
+      }, 0);
+      e.preventDefault();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsVerifying(true);
     const fullOtp = otp.join("");
     if (fullOtp.length !== 6) {
       toast.error("Please enter the 6-digit OTP.");
+      setIsVerifying(false);
       return;
     }
     try {
@@ -51,8 +92,6 @@ export default function OTPVerification() {
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/otp/`,
         otpFormData
       );
-
-      console.log("OTP Verification Response:", verifyRes);
 
       if (verifyRes.status === 200) {
         // 2. Get registration data from sessionStorage
@@ -80,9 +119,11 @@ export default function OTPVerification() {
           router.push("/login");
         } else {
           toast.error(regRes.data?.message || "Registration failed.");
+          setIsVerifying(false);
         }
       } else {
         toast.error(verifyRes.data?.message || "Invalid OTP.");
+        setIsVerifying(false);
       }
     } catch (error) {
       if (error.response) {
@@ -92,6 +133,7 @@ export default function OTPVerification() {
       } else {
         toast.error("An error occurred. Please try again.");
       }
+      setIsVerifying(false);
     }
   };
 
@@ -103,7 +145,7 @@ export default function OTPVerification() {
       >
         <h1 className="text-2xl font-bold text-center text-white mb-6">OTP</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form id="otp-form" onSubmit={handleSubmit} className="space-y-6">
           <div className="flex justify-center space-x-3">
             {otp.map((digit, index) => (
               <input
@@ -113,6 +155,8 @@ export default function OTPVerification() {
                 maxLength={1}
                 value={digit}
                 onChange={(e) => handleOtpChange(index, e.target.value)}
+                onPaste={handlePaste}
+                onKeyDown={(e) => handleOtpKeyDown(index, e)}
                 className="w-10 h-10 border-2 border-gray-300 bg-white rounded-md text-center text-xl focus:border-blue-500 focus:outline-none"
                 inputMode="numeric"
                 pattern="[0-9]*"
@@ -129,8 +173,9 @@ export default function OTPVerification() {
               type="submit"
               className="text-white font-medium py-3 px-4"
               style={{ backgroundColor: "#438BD3" }}
+              disabled={isVerifying}
             >
-              Done
+              {isVerifying ? "Verifying..." : "Done"}
             </Button>
           </div>
         </form>
