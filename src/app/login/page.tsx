@@ -7,6 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import Image from "next/image";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -77,7 +78,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="flex justify-center mb-12 pt-10">
-        <img src="/PSA-Logo.svg" alt="PSA Logo" className="w-52 h-52" />
+        <Image src="/PSA-Logo.svg" alt="PSA Logo" width={208} height={208} />
       </div>
       <div
         className="w-4/5 sm:w-full max-w-md py-7 px-4 sm:p-7 rounded-4xl text-white shadow-xl"
@@ -152,7 +153,7 @@ export default function Login() {
       </div>
       <div className="text-center mt-2 text-sm space-y-1 pb-10">
         <p className="text-white">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="text-blue-400 hover:text-blue-300">
             Sign up now!
           </Link>

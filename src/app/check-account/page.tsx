@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="flex justify-center mb-12">
-        <img src="/PSA-Logo.svg" alt="PSA Logo" className="w-52 h-52" />
+        <Image src="/PSA-Logo.svg" alt="PSA Logo" width={208} height={208} />
       </div>
       <div
         className="w-4/5 sm:w-full max-w-md py-7 px-4 sm:p-7 rounded-4xl text-white shadow-xl"
