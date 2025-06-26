@@ -13,7 +13,6 @@ import {
 import Button from "@/components/Button";
 import SettingsCard from "@/components/SettingsCard";
 import ProfileCard from "@/components/ProfileCard";
-import { customStyle } from "../layout";
 import Image from "next/image";
 
 // Helper component for chat history items
