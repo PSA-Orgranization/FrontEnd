@@ -57,10 +57,10 @@ export default function ChatPage() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.clear();
     window.location.href = "/login";
-  };
+  }, []);
 
   // Fetch chat history
   const fetchChats = useCallback(async () => {
