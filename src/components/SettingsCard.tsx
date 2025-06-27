@@ -4,7 +4,17 @@
 import Button from "./Button";
 import { X } from "lucide-react";
 
-export default function SettingsCard({ isOpen, onClose }) {
+interface SettingsCardProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onDeleteAll?: () => void;
+}
+
+export default function SettingsCard({
+  isOpen,
+  onClose,
+  onDeleteAll,
+}: SettingsCardProps) {
   if (!isOpen) return null;
 
   return (
@@ -32,10 +42,7 @@ export default function SettingsCard({ isOpen, onClose }) {
             <span className="text-white">Delete all chats</span>
             <Button
               className="font-medium cursor-pointer text-base py-2 px-3 bg-red-500"
-              onClick={() => {
-                // Add delete functionality here
-                console.log("Delete all chats clicked");
-              }}
+              onClick={onDeleteAll}
             >
               Delete
             </Button>

@@ -104,7 +104,7 @@ export default function Home() {
             alt="PSA Logo"
             width={208}
             height={208}
-            className="w-52 h-52"
+            priority
           />
         </div>
         <h1

@@ -53,8 +53,8 @@ export default function ProfileCard({ isOpen, onClose, user }) {
         onClose={() => setTagModalOpen(false)}
       />
 
-      <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-10">
-        <div className="bg-[#041B2D] w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:rounded-lg shadow-lg overflow-y-auto">
+      <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-10 ">
+        <div className="bg-[#041B2D] scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:rounded-lg shadow-lg overflow-y-auto">
           {/* Header */}
           <div className="flex justify-between items-center  px-4 md:px-8 py-5 border-b border-white-400 sticky top-0  z-10">
             <h2 className="text-xl font-medium text-white">Profile</h2>

@@ -1,7 +1,7 @@
 // pages/chat.js
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import {
   UserCircle,
@@ -14,13 +14,11 @@ import Button from "@/components/Button";
 import SettingsCard from "@/components/SettingsCard";
 import ProfileCard from "@/components/ProfileCard";
 import Image from "next/image";
-
-// Helper component for chat history items
-const ChatHistoryItem = ({ text, date }) => (
-  <div className="px-4 py-2 cursor-pointer hover:bg-slate-800/30">
-    <p className="text-sm text-gray-300 truncate">{text}</p>
-  </div>
-);
+import axios from "axios";
+import { toast } from "react-toastify";
+import ChatHistoryItem from "@/components/ChatHistoryItem";
+import { authRequest } from "@/lib/utils";
+import DotLoader from "@/components/DotLoader";
 
 export default function ChatPage() {
   const [message, setMessage] = useState("");
@@ -28,6 +26,14 @@ export default function ChatPage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [chats, setChats] = useState([]); // [{ chat_id, title }]
+  const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
+  const [chatMessages, setChatMessages] = useState<
+    { markdown_content: string }[]
+  >([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   // Check if the screen is mobile size
   useEffect(() => {
@@ -51,6 +57,31 @@ export default function ChatPage() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const logout = () => {
+    localStorage.clear();
+    window.location.href = "/login";
+  };
+
+  // Fetch chat history
+  const fetchChats = async () => {
+    try {
+      const res = await authRequest(
+        {
+          method: "GET",
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/history/`,
+        },
+        logout
+      );
+      setChats(res.data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load chat history.");
+    }
+  };
+  useEffect(() => {
+    fetchChats();
+  }, []);
+
   // User data
   const user = {
     email: "User@gmail.com",
@@ -58,41 +89,197 @@ export default function ChatPage() {
     aiCoderHandle: "AI Coder handle",
   };
 
-  // Sample chat history data
-  const todayChats = [
-    { id: 1, text: "How to use a chatbot (briefly)", date: new Date() },
-    { id: 2, text: "Lorem Ipsum Dolor Sit...", date: new Date() },
-  ];
+  // Categorize chats by last_open
+  const { todayChats, yesterdayChats, previous30DaysChats } = useMemo(() => {
+    const today: any[] = [];
+    const yesterday: any[] = [];
+    const previous30: any[] = [];
+    const now = new Date();
+    chats.forEach((chat) => {
+      if (!chat.last_open) return;
+      const chatDate = new Date(chat.last_open);
+      const diffTime = now.getTime() - chatDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      if (
+        chatDate.getDate() === now.getDate() &&
+        chatDate.getMonth() === now.getMonth() &&
+        chatDate.getFullYear() === now.getFullYear()
+      ) {
+        today.push(chat);
+      } else if (
+        diffDays === 1 &&
+        chatDate.getMonth() === now.getMonth() &&
+        chatDate.getFullYear() === now.getFullYear()
+      ) {
+        yesterday.push(chat);
+      } else if (diffDays > 1 && diffDays <= 30) {
+        previous30.push(chat);
+      }
+    });
+    // Sort each category by last_open ascending (oldest first)
+    const sortAsc = (a: any, b: any) => {
+      const dateA = new Date(a.last_open).getTime();
+      const dateB = new Date(b.last_open).getTime();
+      if (dateA !== dateB) return dateA - dateB;
+      // If dates are equal, sort by id descending
+      return b.id - a.id;
+    };
+    today.sort(sortAsc);
+    yesterday.sort(sortAsc);
+    previous30.sort(sortAsc);
 
-  const yesterdayChats = [
-    {
-      id: 3,
-      text: "Lorem Ipsum Dolor Sit...",
-      date: new Date(Date.now() - 86400000),
-    },
-    {
-      id: 4,
-      text: "Lorem Ipsum Dolor Sit...",
-      date: new Date(Date.now() - 86400000),
-    },
-  ];
+    return {
+      todayChats: today,
+      yesterdayChats: yesterday,
+      previous30DaysChats: previous30,
+    };
+  }, [chats]);
 
-  const olderChats = Array.from({ length: 30 }, (_, i) => ({
-    id: i + 5,
-    text: "Lorem Ipsum Dolor Sit...",
-    date: new Date(Date.now() - (i + 2) * 86400000),
-  }));
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle message submission
-    console.log("Message submitted:", message);
+
+    if (!selectedChatId || !message.trim()) return;
+    const userMsg = { markdown_content: message };
+    setChatMessages((prev) => [
+      ...prev,
+      userMsg,
+      { markdown_content: "__LOADING__" },
+    ]);
     setMessage("");
+    try {
+      const res = await authRequest(
+        {
+          method: "POST",
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/send_prompt/${selectedChatId}/`,
+          data: { prompt: userMsg.markdown_content },
+          headers: { "Content-Type": "application/json" },
+        },
+        logout
+      );
+
+      // Replace the last message (the loading message) with the real AI response
+      setChatMessages((prev) => [
+        ...prev.slice(0, -1),
+        { markdown_content: res.data.response },
+      ]);
+    } catch (error) {
+      // Remove the loading message
+      setChatMessages((prev) => prev.slice(0, -1));
+      console.error(error);
+      toast.error("Failed to send message.");
+    }
   };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  // Handle New Chat button click
+  const handleNewChat = async () => {
+    try {
+      const res = await authRequest(
+        {
+          method: "POST",
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/create/`,
+          data: { title: "New Chat" },
+        },
+        logout
+      );
+      // Fetch chat history again to get the latest chats
+      await fetchChats();
+      // Open the new chat if id is returned
+
+      if (res.data && res.data.chat_id) {
+        await handleOpenChat(res.data.chat_id);
+      }
+    } catch (error) {
+      console.error(error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Failed to create chat.");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    }
+    toggleSidebar();
+  };
+
+  // Handle chat deletion
+  const handleDeleteChat = (chatId: number) => async () => {
+    try {
+      const res = await authRequest(
+        {
+          method: "DELETE",
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/delete/${chatId}/`,
+        },
+        logout
+      );
+      toast.success(res.data.message || "Chat deleted successfully.");
+      await fetchChats();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete chat.");
+    }
+  };
+
+  // Handle delete all chats
+  const deleteAllChats = async () => {
+    if (!chats.length) return;
+    try {
+      await Promise.all(
+        chats.map((chat) =>
+          authRequest(
+            {
+              method: "DELETE",
+              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/delete/${chat.id}/`,
+            },
+            logout
+          )
+        )
+      );
+      toast.success("All chats deleted successfully.");
+      await fetchChats();
+
+      setSettingsOpen(false);
+      toggleSidebar();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete all chats.");
+    }
+  };
+
+  // Fetch messages for a chat
+  const handleOpenChat = async (chatId: number) => {
+    setSelectedChatId(chatId);
+    setLoadingMessages(true);
+    try {
+      const res = await authRequest(
+        {
+          method: "GET",
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/get_chat/${chatId}/`,
+        },
+        logout
+      );
+      setChatMessages(res.data.data || []);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load chat messages.");
+      setChatMessages([]);
+    } finally {
+      setLoadingMessages(false);
+      toggleSidebar();
+      // Focus the input field after opening a chat
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    }
+  };
+
+  // Scroll to bottom when chatMessages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages]);
 
   return (
     <div className="flex h-screen text-white">
@@ -152,6 +339,7 @@ export default function ChatPage() {
       <SettingsCard
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+        onDeleteAll={deleteAllChats}
       />
 
       {/* Left Sidebar */}
@@ -180,7 +368,7 @@ export default function ChatPage() {
             <Button
               className="sm:w-full py-3 px-4 rounded-md text-left hover:bg-blue-800"
               backGround="bg-[#082540]"
-              onClick={toggleSidebar}
+              onClick={handleNewChat}
             >
               New Chat
             </Button>
@@ -190,44 +378,62 @@ export default function ChatPage() {
         {/* Chat History */}
         <div className="flex-1 overflow-y-auto scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden">
           {/* Today's Chats */}
-          <div className="mb-2 mx-4">
-            <div className="px-1 py-2 text-lg font-semibold text-white">
-              Today
+          {todayChats.length > 0 && (
+            <div className="mb-2 mx-4">
+              <div className="px-1 py-2 text-lg font-semibold text-white">
+                Today
+              </div>
+              {todayChats.map((chat) => (
+                <div key={chat.id} onClick={() => handleOpenChat(chat.id)}>
+                  <ChatHistoryItem
+                    text={chat.title}
+                    onDelete={handleDeleteChat(chat.id)}
+                    className={
+                      selectedChatId === chat.id ? "bg-blue-900/40" : ""
+                    }
+                  />
+                </div>
+              ))}
             </div>
-            {todayChats.map((chat) => (
-              <ChatHistoryItem
-                key={chat.id}
-                text={chat.text}
-                date={chat.date}
-              />
-            ))}
-          </div>
+          )}
           {/* Yesterday's Chats */}
-          <div className="mb-2 mx-4 border-t border-b sm:border-none border-white-800">
-            <div className="px-1 py-2 text-lg font-semibold text-white">
-              Yesterday
+          {yesterdayChats.length > 0 && (
+            <div className="mb-2 mx-4 border-t border-b sm:border-none border-white-800">
+              <div className="px-1 py-2 text-lg font-semibold text-white">
+                Yesterday
+              </div>
+              {yesterdayChats.map((chat) => (
+                <div key={chat.id} onClick={() => handleOpenChat(chat.id)}>
+                  <ChatHistoryItem
+                    text={chat.title}
+                    onDelete={handleDeleteChat(chat.id)}
+                    className={
+                      selectedChatId === chat.id ? "bg-blue-900/40" : ""
+                    }
+                  />
+                </div>
+              ))}
             </div>
-            {yesterdayChats.map((chat) => (
-              <ChatHistoryItem
-                key={chat.id}
-                text={chat.text}
-                date={chat.date}
-              />
-            ))}
-          </div>
+          )}
           {/* Previous 30 Days */}
-          <div className="mx-4">
-            <div className="px-1 py-2 text-lg font-semibold text-white">
-              Previous 30 days
+          {previous30DaysChats.length > 0 && (
+            <div className="mx-4">
+              <div className="px-1 py-2 text-lg font-semibold text-white">
+                Previous 30 days
+              </div>
+              {previous30DaysChats.map((chat) => (
+                <div key={chat.id} onClick={() => handleOpenChat(chat.id)}>
+                  <ChatHistoryItem
+                    text={chat.title}
+                    onDelete={handleDeleteChat(chat.id)}
+                    className={
+                      selectedChatId === chat.id ? "bg-blue-900/40" : ""
+                    }
+                  />
+                </div>
+              ))}
             </div>
-            {olderChats.map((chat) => (
-              <ChatHistoryItem
-                key={chat.id}
-                text={chat.text}
-                date={chat.date}
-              />
-            ))}
-          </div>
+          )}
         </div>
       </div>
 
@@ -272,63 +478,67 @@ export default function ChatPage() {
         >
           {/* Chat Messages */}
           <div
-            className={`flex-1 flex flex-col space-y-4 py-4 px-4 md:px-8 w-full ${
+            className={`flex-1 flex flex-col space-y-4 pt-4 px-4 md:px-8 w-full pb-10 md:pb-4  ${
               !sidebarOpen ? "max-w-7xl" : ""
-            }`}
+            } overflow-y-auto scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden`}
           >
-            {/* User's "How to use a chatbot" query */}
-            <div className="flex justify-end">
-              <div
-                className="bg-blue-950/50 px-3 py-2 rounded-2xl rounded-tr-none max-w-xs md:max-w-md"
-                style={{ backgroundColor: "#0D263D" }}
-              >
-                <p className="text-white text-sm">
-                  How to use a chatbot (briefly)
-                </p>
+            {loadingMessages ? (
+              <div className="flex justify-center items-center h-full text-gray-400">
+                Loading messages...
               </div>
-            </div>
-
-            {/* Bot Message */}
-            <div className="flex flex-col items-start">
-              <div className="flex flex-col items-start">
-                <div className="bg-blue-800 rounded-full h-6 w-6 md:h-10 md:w-10 flex items-center justify-center mb-2">
-                  <Image src="/PSA-Logo.svg" alt="Bot" width={48} height={48} />
-                </div>
-                <div
-                  className="py-2 px-3 rounded-2xl rounded-tl-none max-w-xs md:max-w-2xl"
-                  style={{ backgroundColor: "#0D263D" }}
-                >
-                  <div className="text-white text-sm space-y-1">
-                    <p>Using A Chatbot Is Simple:</p>
-                    <ol className="space-y-1 pl-5 list-decimal">
-                      <li>
-                        Start A Conversation – Type Your Question Or Command In
-                        The Chat.
-                      </li>
-                      <li>
-                        Receive A Response – The Bot Replies With Relevant
-                        Information Or Actions.
-                      </li>
-                      <li>
-                        Clarify If Needed – If The Response Isn&apos;t Accurate,
-                        Refine Your Input.
-                      </li>
-                      <li>
-                        Follow Instructions – The Bot May Guide You Through
-                        Steps Or Provide Links.
-                      </li>
-                      <li>
-                        End The Session – Close The Chat When You&apos;re Done.
-                      </li>
-                    </ol>
-                    <p>
-                      Chat bots Can Assist With FAQs, Troubleshooting, And
-                      Automation Tasks.
-                    </p>
-                  </div>
-                </div>
+            ) : chatMessages.length > 0 ? (
+              chatMessages.map((msg, idx) => {
+                // User message (right)
+                if (idx % 2 === 0) {
+                  return (
+                    <div key={idx} className="flex justify-end">
+                      <div className="bg-pink-500 px-3 py-2 rounded-2xl rounded-tr-none max-w-xs md:max-w-md">
+                        <p className="text-white text-sm">
+                          {msg.markdown_content === "__LOADING__" ? (
+                            <DotLoader />
+                          ) : (
+                            msg.markdown_content
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                } else {
+                  // AI message (left)
+                  return (
+                    <div key={idx} className="flex flex-col items-start">
+                      {/* <div className="bg-blue-800 rounded-full h-6 w-6 md:h-10 md:w-10 flex items-center justify-center mb-2">
+                        <Image
+                          src="/PSA-Logo.svg"
+                          alt="Bot"
+                          width={48}
+                          height={48}
+                        />
+                      </div> */}
+                      <div
+                        className="py-2 px-3 sm:ml-2 sm:mt-2 rounded-2xl rounded-tl-none max-w-xs md:max-w-2xl"
+                        style={{ backgroundColor: "#0D263D" }}
+                      >
+                        <div className="text-white text-sm space-y-1">
+                          <p>
+                            {msg.markdown_content === "__LOADING__" ? (
+                              <DotLoader />
+                            ) : (
+                              msg.markdown_content
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+              })
+            ) : (
+              <div className="flex justify-center items-center h-full text-gray-400">
+                No messages yet.
               </div>
-            </div>
+            )}
+            <div ref={messagesEndRef} />
           </div>
         </div>
 
@@ -343,6 +553,7 @@ export default function ChatPage() {
             className={`flex w-full ${!sidebarOpen ? "max-w-7xl" : ""}`}
           >
             <input
+              ref={inputRef}
               type="text"
               placeholder="Send a message..."
               value={message}

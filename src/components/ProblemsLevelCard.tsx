@@ -77,7 +77,7 @@ export default function ProblemsLevelCard({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-[#041B2D] w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:rounded-lg overflow-y-auto">
+      <div className="bg-[#041B2D] scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:rounded-lg overflow-y-auto">
         {/* Header - made sticky for mobile scrolling */}
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-700 sticky top-0 bg-[#041B2D] z-10">
           <div className="flex items-center">
