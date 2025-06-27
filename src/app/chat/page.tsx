@@ -1,7 +1,7 @@
 // pages/chat.js
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   UserCircle,
@@ -63,7 +63,7 @@ export default function ChatPage() {
   };
 
   // Fetch chat history
-  const fetchChats = async () => {
+  const fetchChats = useCallback(async () => {
     try {
       const res = await authRequest(
         {
@@ -77,10 +77,11 @@ export default function ChatPage() {
       console.error(error);
       toast.error("Failed to load chat history.");
     }
-  };
+  }, [logout]);
+
   useEffect(() => {
     fetchChats();
-  }, []);
+  }, [fetchChats]);
 
   // User data
   const user = {
