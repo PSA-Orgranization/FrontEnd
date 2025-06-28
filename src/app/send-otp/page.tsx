@@ -89,7 +89,7 @@ export default function OTPVerification() {
       otpFormData.append("otp", fullOtp);
 
       const verifyRes = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/otp/`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/verify_otp/`,
         otpFormData
       );
 

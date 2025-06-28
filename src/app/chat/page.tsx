@@ -19,6 +19,10 @@ import { toast } from "react-toastify";
 import ChatHistoryItem from "@/components/ChatHistoryItem";
 import { authRequest } from "@/lib/utils";
 import DotLoader from "@/components/DotLoader";
+import EmptyChatScreen from "@/components/EmptyChatScreen";
+import ChatSidebar from "@/components/ChatSidebar";
+import { Chat, ChatMessage } from "@/types/chat";
+import ChatMainArea from "@/components/ChatMainArea";
 
 export default function ChatPage() {
   const [message, setMessage] = useState("");
@@ -26,11 +30,9 @@ export default function ChatPage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [chats, setChats] = useState([]); // [{ chat_id, title }]
+  const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
-  const [chatMessages, setChatMessages] = useState<
-    { markdown_content: string }[]
-  >([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -136,35 +138,41 @@ export default function ChatPage() {
     };
   }, [chats]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!selectedChatId || !message.trim()) return;
-    const userMsg = { markdown_content: message };
+  const handleSubmit = async (
+    eOrMsg: React.FormEvent | string,
+    chatIdOverride?: number
+  ) => {
+    let msg: string;
+    if (typeof eOrMsg === "string") {
+      msg = eOrMsg;
+    } else {
+      eOrMsg.preventDefault();
+      msg = message;
+    }
+    const chatId = chatIdOverride ?? selectedChatId;
+    if (!chatId || !msg.trim()) return;
+    const userMsg = { markdown_content: msg };
     setChatMessages((prev) => [
       ...prev,
       userMsg,
       { markdown_content: "__LOADING__" },
     ]);
-    setMessage("");
+    if (typeof eOrMsg !== "string") setMessage("");
     try {
       const res = await authRequest(
         {
           method: "POST",
-          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/send_prompt/${selectedChatId}/`,
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/send_prompt/${chatId}/`,
           data: { prompt: userMsg.markdown_content },
           headers: { "Content-Type": "application/json" },
         },
         logout
       );
-
-      // Replace the last message (the loading message) with the real AI response
       setChatMessages((prev) => [
         ...prev.slice(0, -1),
         { markdown_content: res.data.response },
       ]);
     } catch (error) {
-      // Remove the loading message
       setChatMessages((prev) => prev.slice(0, -1));
       console.error(error);
       toast.error("Failed to send message.");
@@ -176,7 +184,11 @@ export default function ChatPage() {
   };
 
   // Handle New Chat button click
-  const handleNewChat = async () => {
+  const handleNewChat = async (firstMessage?: string) => {
+    // If already on an empty chat, do not create a new one
+    if (selectedChatId !== null && chatMessages.length === 0) {
+      return;
+    }
     try {
       const res = await authRequest(
         {
@@ -186,12 +198,12 @@ export default function ChatPage() {
         },
         logout
       );
-      // Fetch chat history again to get the latest chats
       await fetchChats();
-      // Open the new chat if id is returned
-
       if (res.data && res.data.chat_id) {
         await handleOpenChat(res.data.chat_id);
+        if (firstMessage && firstMessage.trim()) {
+          handleSubmit(firstMessage, res.data.chat_id);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -201,7 +213,6 @@ export default function ChatPage() {
         toast.error("An unexpected error occurred.");
       }
     }
-    toggleSidebar();
   };
 
   // Handle chat deletion
@@ -214,8 +225,11 @@ export default function ChatPage() {
         },
         logout
       );
-      toast.success(res.data.message || "Chat deleted successfully.");
       await fetchChats();
+      setSelectedChatId(null);
+      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+        setSidebarOpen(false);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to delete chat.");
@@ -237,11 +251,14 @@ export default function ChatPage() {
           )
         )
       );
-      toast.success("All chats deleted successfully.");
+      // toast.success("All chats deleted successfully.");
       await fetchChats();
 
       setSettingsOpen(false);
-      toggleSidebar();
+      setSelectedChatId(null);
+      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+        setSidebarOpen(false);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to delete all chats.");
@@ -267,7 +284,9 @@ export default function ChatPage() {
       setChatMessages([]);
     } finally {
       setLoadingMessages(false);
-      toggleSidebar();
+      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+        setSidebarOpen(false);
+      }
       // Focus the input field after opening a chat
       setTimeout(() => {
         inputRef.current?.focus();
@@ -344,99 +363,18 @@ export default function ChatPage() {
       />
 
       {/* Left Sidebar */}
-      <div
-        className={`${
-          sidebarOpen
-            ? isMobile
-              ? "fixed inset-0 w-full z-30 "
-              : "md:w-64 w-64"
-            : "md:w-0 w-0"
-        }  flex flex-col overflow-hidden transition-all duration-300 z-20 bg-blue-900/10 `}
-      >
-        {/* Mobile Back Button */}
-        {isMobile && sidebarOpen && (
-          <button
-            onClick={toggleSidebar}
-            className="flex items-center p-4 text-white"
-          >
-            <ChevronLeft className="h-6 w-6 mr-2" />
-            <span>Back</span>
-          </button>
-        )}
-        {/* New Chat Button */}
-        <div className="m-3">
-          <Link href="/chat">
-            <Button
-              className="sm:w-full py-3 px-4 rounded-md text-left hover:bg-blue-800"
-              backGround="bg-[#082540]"
-              onClick={handleNewChat}
-            >
-              New Chat
-            </Button>
-          </Link>
-        </div>
-
-        {/* Chat History */}
-        <div className="flex-1 overflow-y-auto scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden">
-          {/* Today's Chats */}
-          {todayChats.length > 0 && (
-            <div className="mb-2 mx-4">
-              <div className="px-1 py-2 text-lg font-semibold text-white">
-                Today
-              </div>
-              {todayChats.map((chat) => (
-                <div key={chat.id} onClick={() => handleOpenChat(chat.id)}>
-                  <ChatHistoryItem
-                    text={chat.title}
-                    onDelete={handleDeleteChat(chat.id)}
-                    className={
-                      selectedChatId === chat.id ? "bg-blue-900/40" : ""
-                    }
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-          {/* Yesterday's Chats */}
-          {yesterdayChats.length > 0 && (
-            <div className="mb-2 mx-4 border-t border-b sm:border-none border-white-800">
-              <div className="px-1 py-2 text-lg font-semibold text-white">
-                Yesterday
-              </div>
-              {yesterdayChats.map((chat) => (
-                <div key={chat.id} onClick={() => handleOpenChat(chat.id)}>
-                  <ChatHistoryItem
-                    text={chat.title}
-                    onDelete={handleDeleteChat(chat.id)}
-                    className={
-                      selectedChatId === chat.id ? "bg-blue-900/40" : ""
-                    }
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-          {/* Previous 30 Days */}
-          {previous30DaysChats.length > 0 && (
-            <div className="mx-4">
-              <div className="px-1 py-2 text-lg font-semibold text-white">
-                Previous 30 days
-              </div>
-              {previous30DaysChats.map((chat) => (
-                <div key={chat.id} onClick={() => handleOpenChat(chat.id)}>
-                  <ChatHistoryItem
-                    text={chat.title}
-                    onDelete={handleDeleteChat(chat.id)}
-                    className={
-                      selectedChatId === chat.id ? "bg-blue-900/40" : ""
-                    }
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+      <ChatSidebar
+        todayChats={todayChats}
+        yesterdayChats={yesterdayChats}
+        previous30DaysChats={previous30DaysChats}
+        selectedChatId={selectedChatId}
+        onSelectChat={handleOpenChat}
+        onNewChat={() => handleNewChat()}
+        onDeleteChat={(id) => handleDeleteChat(id)()}
+        sidebarOpen={sidebarOpen}
+        isMobile={isMobile}
+        toggleSidebar={toggleSidebar}
+      />
 
       {/* Main Content Area */}
       <div
@@ -470,107 +408,17 @@ export default function ChatPage() {
             />
           </div>
         </div>
-
-        {/* Content Container - Wraps both messages and input field */}
-        <div
-          className={`flex-1 flex flex-col w-full pb-20 md:pb-4 overflow-y-auto ${
-            !sidebarOpen ? "items-center" : ""
-          }`}
-        >
-          {/* Chat Messages */}
-          <div
-            className={`flex-1 flex flex-col space-y-4 pt-4 px-4 md:px-8 w-full pb-10 md:pb-4  ${
-              !sidebarOpen ? "max-w-7xl" : ""
-            } overflow-y-auto scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden`}
-          >
-            {loadingMessages ? (
-              <div className="flex justify-center items-center h-full text-gray-400">
-                Loading messages...
-              </div>
-            ) : chatMessages.length > 0 ? (
-              chatMessages.map((msg, idx) => {
-                // User message (right)
-                if (idx % 2 === 0) {
-                  return (
-                    <div key={idx} className="flex justify-end">
-                      <div className="bg-pink-500 px-3 py-2 rounded-2xl rounded-tr-none max-w-xs md:max-w-md">
-                        <p className="text-white text-sm">
-                          {msg.markdown_content === "__LOADING__" ? (
-                            <DotLoader />
-                          ) : (
-                            msg.markdown_content
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                } else {
-                  // AI message (left)
-                  return (
-                    <div key={idx} className="flex flex-col items-start">
-                      {/* <div className="bg-blue-800 rounded-full h-6 w-6 md:h-10 md:w-10 flex items-center justify-center mb-2">
-                        <Image
-                          src="/PSA-Logo.svg"
-                          alt="Bot"
-                          width={48}
-                          height={48}
-                        />
-                      </div> */}
-                      <div
-                        className="py-2 px-3 sm:ml-2 sm:mt-2 rounded-2xl rounded-tl-none max-w-xs md:max-w-2xl"
-                        style={{ backgroundColor: "#0D263D" }}
-                      >
-                        <div className="text-white text-sm space-y-1">
-                          <p>
-                            {msg.markdown_content === "__LOADING__" ? (
-                              <DotLoader />
-                            ) : (
-                              msg.markdown_content
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-              })
-            ) : (
-              <div className="flex justify-center items-center h-full text-gray-400">
-                No messages yet.
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-
-        {/* Message Input - fixed at bottom for mobile, normal for desktop */}
-        <div
-          className={`fixed bottom-16 md:relative md:bottom-auto left-0 right-0 px-4 py-2 md:px-8 md:py-4 bg-transparent ${
-            !sidebarOpen ? "flex justify-center " : ""
-          }`}
-        >
-          <form
-            onSubmit={handleSubmit}
-            className={`flex w-full ${!sidebarOpen ? "max-w-7xl" : ""}`}
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Send a message..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="flex-1 bg-gray-800/90 text-white placeholder-gray-400 rounded-l-full px-6 py-4 focus:outline-none text-sm"
-              style={{ backgroundColor: "#1E2933" }}
-            />
-            <button
-              type="submit"
-              className="bg-gray-800/90 rounded-r-full px-6 py-4 flex items-center justify-center"
-              style={{ backgroundColor: "#1E2933" }}
-            >
-              <SendHorizontal className="h-4 w-4 text-gray-400 cursor-pointer" />
-            </button>
-          </form>
-        </div>
+        <ChatMainArea
+          chatMessages={chatMessages}
+          loadingMessages={loadingMessages}
+          selectedChatId={selectedChatId}
+          message={message}
+          setMessage={setMessage}
+          handleSubmit={(e) => handleSubmit(e)}
+          handleNewChat={handleNewChat}
+          inputRef={inputRef}
+          sidebarOpen={sidebarOpen}
+        />
       </div>
     </div>
   );
