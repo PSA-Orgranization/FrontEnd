@@ -13,6 +13,7 @@ interface ChatSidebarProps {
   onSelectChat: (id: number) => void;
   onNewChat: () => void;
   onDeleteChat: (id: number) => void;
+  onUpdateChatTitle: (chatId: number, newTitle: string) => void;
   sidebarOpen: boolean;
   isMobile: boolean;
   toggleSidebar: () => void;
@@ -26,6 +27,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onSelectChat,
   onNewChat,
   onDeleteChat,
+  onUpdateChatTitle,
   sidebarOpen,
   isMobile,
   toggleSidebar,
@@ -74,6 +76,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               <ChatHistoryItem
                 text={chat.title}
                 onDelete={() => onDeleteChat(chat.id)}
+                onUpdateTitle={(newTitle) =>
+                  onUpdateChatTitle(chat.id, newTitle)
+                }
                 className={selectedChatId === chat.id ? "bg-blue-900/40" : ""}
               />
             </div>
@@ -91,6 +96,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               <ChatHistoryItem
                 text={chat.title}
                 onDelete={() => onDeleteChat(chat.id)}
+                onUpdateTitle={(newTitle) =>
+                  onUpdateChatTitle(chat.id, newTitle)
+                }
                 className={selectedChatId === chat.id ? "bg-blue-900/40" : ""}
               />
             </div>
@@ -108,6 +116,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               <ChatHistoryItem
                 text={chat.title}
                 onDelete={() => onDeleteChat(chat.id)}
+                onUpdateTitle={(newTitle) =>
+                  onUpdateChatTitle(chat.id, newTitle)
+                }
                 className={selectedChatId === chat.id ? "bg-blue-900/40" : ""}
               />
             </div>

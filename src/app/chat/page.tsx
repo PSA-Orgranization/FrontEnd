@@ -34,6 +34,10 @@ export default function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [loadingChats, setLoadingChats] = useState(true);
+  const [todayChats, setTodayChats] = useState<Chat[]>([]);
+  const [yesterdayChats, setYesterdayChats] = useState<Chat[]>([]);
+  const [previous30DaysChats, setPrevious30DaysChats] = useState<Chat[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -65,7 +69,8 @@ export default function ChatPage() {
   }, []);
 
   // Fetch chat history
-  const fetchChats = useCallback(async () => {
+  const fetchChats = async () => {
+    setLoadingChats(true);
     try {
       const res = await authRequest(
         {
@@ -74,16 +79,69 @@ export default function ChatPage() {
         },
         logout
       );
-      setChats(res.data);
+
+      // Handle both direct array and wrapped response
+      const chatsData = Array.isArray(res.data)
+        ? res.data
+        : res.data.data || res.data;
+
+      setChats(chatsData);
+
+      // Categorize chats immediately after getting the data
+      const today: Chat[] = [];
+      const yesterday: Chat[] = [];
+      const previous30: Chat[] = [];
+      const now = new Date();
+
+      chatsData.forEach((chat: Chat) => {
+        if (!chat.last_open) return;
+        const chatDate = new Date(chat.last_open);
+        const diffTime = now.getTime() - chatDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (
+          chatDate.getDate() === now.getDate() &&
+          chatDate.getMonth() === now.getMonth() &&
+          chatDate.getFullYear() === now.getFullYear()
+        ) {
+          today.push(chat);
+        } else if (
+          diffDays === 1 &&
+          chatDate.getMonth() === now.getMonth() &&
+          chatDate.getFullYear() === now.getFullYear()
+        ) {
+          yesterday.push(chat);
+        } else if (diffDays > 1 && diffDays <= 30) {
+          previous30.push(chat);
+        }
+      });
+
+      // Sort each category by last_open ascending (oldest first)
+      const sortAsc = (a: Chat, b: Chat) => {
+        const dateA = new Date(a.last_open!).getTime();
+        const dateB = new Date(b.last_open!).getTime();
+        if (dateA !== dateB) return dateA - dateB;
+        // If dates are equal, sort by id descending
+        return b.id - a.id;
+      };
+      today.sort(sortAsc);
+      yesterday.sort(sortAsc);
+      previous30.sort(sortAsc);
+
+      setTodayChats(today);
+      setYesterdayChats(yesterday);
+      setPrevious30DaysChats(previous30);
     } catch (error) {
       console.error(error);
       toast.error("Failed to load chat history.");
+    } finally {
+      setLoadingChats(false);
     }
-  }, [logout]);
+  };
 
   useEffect(() => {
     fetchChats();
-  }, [fetchChats]);
+  }, []);
 
   // User data
   const user = {
@@ -91,52 +149,6 @@ export default function ChatPage() {
     codeHandle: "Code forces handle",
     aiCoderHandle: "AI Coder handle",
   };
-
-  // Categorize chats by last_open
-  const { todayChats, yesterdayChats, previous30DaysChats } = useMemo(() => {
-    const today: any[] = [];
-    const yesterday: any[] = [];
-    const previous30: any[] = [];
-    const now = new Date();
-    chats.forEach((chat) => {
-      if (!chat.last_open) return;
-      const chatDate = new Date(chat.last_open);
-      const diffTime = now.getTime() - chatDate.getTime();
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      if (
-        chatDate.getDate() === now.getDate() &&
-        chatDate.getMonth() === now.getMonth() &&
-        chatDate.getFullYear() === now.getFullYear()
-      ) {
-        today.push(chat);
-      } else if (
-        diffDays === 1 &&
-        chatDate.getMonth() === now.getMonth() &&
-        chatDate.getFullYear() === now.getFullYear()
-      ) {
-        yesterday.push(chat);
-      } else if (diffDays > 1 && diffDays <= 30) {
-        previous30.push(chat);
-      }
-    });
-    // Sort each category by last_open ascending (oldest first)
-    const sortAsc = (a: any, b: any) => {
-      const dateA = new Date(a.last_open).getTime();
-      const dateB = new Date(b.last_open).getTime();
-      if (dateA !== dateB) return dateA - dateB;
-      // If dates are equal, sort by id descending
-      return b.id - a.id;
-    };
-    today.sort(sortAsc);
-    yesterday.sort(sortAsc);
-    previous30.sort(sortAsc);
-
-    return {
-      todayChats: today,
-      yesterdayChats: yesterday,
-      previous30DaysChats: previous30,
-    };
-  }, [chats]);
 
   const handleSubmit = async (
     eOrMsg: React.FormEvent | string,
@@ -194,7 +206,7 @@ export default function ChatPage() {
         {
           method: "POST",
           url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/create/`,
-          data: { title: "New Chat" },
+          // data: { title: "New Chat" },
         },
         logout
       );
@@ -221,7 +233,7 @@ export default function ChatPage() {
       const res = await authRequest(
         {
           method: "DELETE",
-          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/delete/${chatId}/`,
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/chat/${chatId}/`,
         },
         logout
       );
@@ -236,22 +248,37 @@ export default function ChatPage() {
     }
   };
 
+  // Handle update chat title
+  const handleUpdateChatTitle = async (chatId: number, newTitle: string) => {
+    try {
+      await authRequest(
+        {
+          method: "PUT",
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/chat/${chatId}/`,
+          data: { title: newTitle },
+          headers: { "Content-Type": "application/json" },
+        },
+        logout
+      );
+      await fetchChats(); // Refresh the chat list
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update chat title.");
+    }
+  };
+
   // Handle delete all chats
   const deleteAllChats = async () => {
     if (!chats.length) return;
+
     try {
-      await Promise.all(
-        chats.map((chat) =>
-          authRequest(
-            {
-              method: "DELETE",
-              url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/delete/${chat.id}/`,
-            },
-            logout
-          )
-        )
+      await authRequest(
+        {
+          method: "DELETE",
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/delete_all/`,
+        },
+        logout
       );
-      // toast.success("All chats deleted successfully.");
       await fetchChats();
 
       setSettingsOpen(false);
@@ -273,7 +300,7 @@ export default function ChatPage() {
       const res = await authRequest(
         {
           method: "GET",
-          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/get_chat/${chatId}/`,
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/chat/${chatId}/`,
         },
         logout
       );
@@ -363,6 +390,7 @@ export default function ChatPage() {
       />
 
       {/* Left Sidebar */}
+
       <ChatSidebar
         todayChats={todayChats}
         yesterdayChats={yesterdayChats}
@@ -374,6 +402,7 @@ export default function ChatPage() {
         sidebarOpen={sidebarOpen}
         isMobile={isMobile}
         toggleSidebar={toggleSidebar}
+        onUpdateChatTitle={handleUpdateChatTitle}
       />
 
       {/* Main Content Area */}
