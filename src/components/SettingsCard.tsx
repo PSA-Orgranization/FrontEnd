@@ -2,7 +2,10 @@
 "use client";
 
 import Button from "./Button";
-import { X } from "lucide-react";
+import { X, LogOut, Trash2, Key, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import ChangePasswordCard from "./ChangePasswordCard";
 
 interface SettingsCardProps {
   isOpen: boolean;
@@ -15,40 +18,122 @@ export default function SettingsCard({
   onClose,
   onDeleteAll,
 }: SettingsCardProps) {
+  const router = useRouter();
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+
+  const handleChangePassword = () => {
+    setChangePasswordOpen(true);
+  };
+
+  // Function to clear authentication-related localStorage items
+  const clearAuthStorage = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("first_name");
+    localStorage.removeItem("last_name");
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    clearAuthStorage();
+    onClose(); // Close the settings modal
+    router.push("/");
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
-      <div
-        className="bg-gray-800 rounded-lg p-6 w-96 "
-        style={{ backgroundColor: "#041B2D" }}
-      >
-        <div className="flex justify-between items-center pb-4 px-6 -mx-6">
-          <h2 className="text-xl font-semibold text-white">Settings</h2>
+    <>
+      <ChangePasswordCard
+        isOpen={changePasswordOpen}
+        onClose={() => setChangePasswordOpen(false)}
+      />
 
-          <Button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl p-1"
-          >
-            <X size={16} />
-          </Button>
-        </div>
-
-        {/* Full-width white divider line */}
-        <div className="border-t border-white -mx-6"></div>
-
-        <div className="space-y-4 pt-4">
-          <div className="flex justify-between items-center p-3 bg-gray-700 rounded-md">
-            <span className="text-white">Delete all chats</span>
+      <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-10 ">
+        <div className="bg-[#041B2D] scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-lg md:rounded-lg shadow-lg overflow-y-auto">
+          {/* Header */}
+          <div className="flex justify-between items-center px-4 md:px-8 py-5 border-b border-white-400 sticky top-0 z-10">
+            <div className="flex items-center gap-3">
+              <div className="hidden md:block p-2 bg-blue-900/20 rounded-lg">
+                <Settings size={20} className="text-blue-400" />
+              </div>
+              <h2 className="text-xl font-semibold text-white">Settings</h2>
+            </div>
             <Button
-              className="font-medium cursor-pointer text-base py-2 px-3 bg-red-500"
-              onClick={onDeleteAll}
+              onClick={onClose}
+              className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-200"
             >
-              Delete
+              <X size={18} />
             </Button>
+          </div>
+
+          {/* Settings Options */}
+          <div className="p-6 space-y-3">
+            {/* Delete All Chats */}
+            <div className="group bg-gray-800/50 rounded-lg border border-gray-700/50 hover:border-gray-600/50 transition-all duration-200">
+              <div className="flex justify-between items-center p-4">
+                <div>
+                  <span className="text-white font-medium">
+                    Delete all chats
+                  </span>
+                  <p className="text-gray-400 text-sm">
+                    Permanently remove all conversation history
+                  </p>
+                </div>
+                <Button
+                  className="p-2 bg-red-600 hover:bg-red-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md"
+                  onClick={onDeleteAll}
+                  title="Delete all chats"
+                >
+                  <Trash2 size={18} className="text-white" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Change Password */}
+            <div className="group bg-gray-800/50 rounded-lg border border-gray-700/50 hover:border-gray-600/50 transition-all duration-200">
+              <div className="flex justify-between items-center p-4">
+                <div>
+                  <span className="text-white font-medium">
+                    Change Password
+                  </span>
+                  <p className="text-gray-400 text-sm">
+                    Change your account password
+                  </p>
+                </div>
+                <Button
+                  className="p-2 bg-blue-600 hover:bg-blue-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md"
+                  onClick={handleChangePassword}
+                  title="Change password"
+                >
+                  <Key size={18} className="text-white" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Logout */}
+            <div className="group bg-gray-800/50 rounded-lg border border-gray-700/50 hover:border-gray-600/50 transition-all duration-200">
+              <div className="flex justify-between items-center p-4">
+                <div>
+                  <span className="text-white font-medium">Logout</span>
+                  <p className="text-gray-400 text-sm">
+                    Sign out of your account
+                  </p>
+                </div>
+                <Button
+                  className="p-2 bg-orange-600 hover:bg-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md"
+                  onClick={handleLogout}
+                  title="Logout"
+                >
+                  <LogOut size={18} className="text-white" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -23,8 +23,10 @@ import EmptyChatScreen from "@/components/EmptyChatScreen";
 import ChatSidebar from "@/components/ChatSidebar";
 import { Chat, ChatMessage } from "@/types/chat";
 import ChatMainArea from "@/components/ChatMainArea";
+import { useRouter } from "next/navigation";
 
 export default function ChatPage() {
+  const router = useRouter();
   const [message, setMessage] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -40,6 +42,21 @@ export default function ChatPage() {
   const [previous30DaysChats, setPrevious30DaysChats] = useState<Chat[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Check authentication on component mount
+  const checkAuth = () => {
+    const accessToken = localStorage.getItem("access_token");
+    const refreshToken = localStorage.getItem("refresh_token");
+    const username = localStorage.getItem("username");
+    const email = localStorage.getItem("email");
+
+    // Check if essential auth data is missing
+    if (!accessToken || !refreshToken || !username || !email) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   // Check if the screen is mobile size
   useEffect(() => {
@@ -86,7 +103,6 @@ export default function ChatPage() {
         : res.data.data || res.data;
 
       setChats(chatsData);
-
       // Categorize chats immediately after getting the data
       const today: Chat[] = [];
       const yesterday: Chat[] = [];
@@ -105,14 +121,10 @@ export default function ChatPage() {
           chatDate.getFullYear() === now.getFullYear()
         ) {
           today.push(chat);
-        } else if (
-          diffDays === 1 &&
-          chatDate.getMonth() === now.getMonth() &&
-          chatDate.getFullYear() === now.getFullYear()
-        ) {
-          yesterday.push(chat);
         } else if (diffDays > 1 && diffDays <= 30) {
           previous30.push(chat);
+        } else {
+          yesterday.push(chat);
         }
       });
 
@@ -140,6 +152,10 @@ export default function ChatPage() {
   }, [logout]);
 
   useEffect(() => {
+    if (checkAuth()) {
+      router.push("/login");
+      return;
+    }
     fetchChats();
   }, [fetchChats]);
 
@@ -269,7 +285,10 @@ export default function ChatPage() {
 
   // Handle delete all chats
   const deleteAllChats = async () => {
-    if (!chats.length) return;
+    if (!chats.length) {
+      setSettingsOpen(false);
+      return;
+    }
 
     try {
       await authRequest(
@@ -341,6 +360,7 @@ export default function ChatPage() {
           className="flex flex-col items-center justify-center w-1/3"
           onClick={() => {
             setProfileOpen(false);
+            setSettingsOpen(false);
             setSidebarOpen(false);
           }}
         >
@@ -354,6 +374,7 @@ export default function ChatPage() {
         <button
           onClick={() => {
             setProfileOpen(true);
+            setSettingsOpen(false);
             setSidebarOpen(false);
           }}
           className="flex flex-col items-center justify-center w-1/3"
@@ -365,6 +386,7 @@ export default function ChatPage() {
         <button
           onClick={() => {
             setSettingsOpen(true);
+            setProfileOpen(false);
             setSidebarOpen(false);
           }}
           className="flex flex-col items-center justify-center w-1/3"
@@ -447,6 +469,7 @@ export default function ChatPage() {
           handleNewChat={handleNewChat}
           inputRef={inputRef}
           sidebarOpen={sidebarOpen}
+          messagesEndRef={messagesEndRef}
         />
       </div>
     </div>
