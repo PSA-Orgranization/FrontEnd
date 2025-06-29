@@ -69,7 +69,7 @@ export default function ChatPage() {
   }, []);
 
   // Fetch chat history
-  const fetchChats = async () => {
+  const fetchChats = useCallback(async () => {
     setLoadingChats(true);
     try {
       const res = await authRequest(
@@ -137,11 +137,11 @@ export default function ChatPage() {
     } finally {
       setLoadingChats(false);
     }
-  };
+  }, [logout]);
 
   useEffect(() => {
     fetchChats();
-  }, []);
+  }, [fetchChats]);
 
   // User data
   const user = {
