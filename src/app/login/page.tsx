@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Image from "next/image";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -130,9 +131,9 @@ export default function Login() {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
               >
                 {showPassword ? (
-                  <AiOutlineEye className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
+                  <Eye className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
                 ) : (
-                  <AiOutlineEyeInvisible className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
+                  <EyeOff className="w-5 h-5 text-white/70 hover:text-white cursor-pointer" />
                 )}
               </button>
             </div>

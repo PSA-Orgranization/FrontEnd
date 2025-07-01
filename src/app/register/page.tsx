@@ -50,6 +50,15 @@ export default function Register() {
     return true;
   };
 
+  const validateName = (name, label) => {
+    const namePattern = /^[A-Za-z]+$/;
+    if (!namePattern.test(name)) {
+      toast.error(`${label} must contain only alphabetic characters.`);
+      return false;
+    }
+    return true;
+  };
+
   const validatePassword = (password, confirmPassword) => {
     if (password !== confirmPassword) {
       toast.error("Password and Confirm Password do not match.");
@@ -84,6 +93,14 @@ export default function Register() {
     });
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
+      setIsSubmitting(false);
+      return;
+    }
+    if (!validateName(formData.firstName, "First Name")) {
+      setIsSubmitting(false);
+      return;
+    }
+    if (!validateName(formData.lastName, "Last Name")) {
       setIsSubmitting(false);
       return;
     }

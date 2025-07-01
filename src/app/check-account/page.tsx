@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import axios from "axios";
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
@@ -13,11 +14,23 @@ export default function ResetPassword() {
     setEmail(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle logic here
-
-    router.push("/reset-password");
+    // Send OTP to email
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/otp/`,
+        { email },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("email", email);
+        sessionStorage.setItem("resetPassword", "true");
+      }
+      router.push("/send-otp");
+    } catch (err) {
+      alert("Failed to send OTP. Please try again.");
+    }
   };
 
   return (

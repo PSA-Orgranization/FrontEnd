@@ -83,46 +83,97 @@ export default function OTPVerification() {
       return;
     }
     try {
-      // 1. Verify OTP
-      const otpFormData = new FormData();
-      otpFormData.append("email", Email);
-      otpFormData.append("otp", fullOtp);
+      const regData = sessionStorage.getItem("registrationData");
+      const resetPassword = sessionStorage.getItem("resetPassword");
+      if (regData) {
+        // Registration flow (existing)
+        // 1. Verify OTP
+        const otpFormData = new FormData();
+        otpFormData.append("email", Email);
+        otpFormData.append("otp", fullOtp);
 
-      const verifyRes = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/verify_otp/`,
-        otpFormData
-      );
+        const verifyRes = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/verify_otp/`,
+          otpFormData
+        );
 
-      if (verifyRes.status === 200) {
-        // 2. Get registration data from sessionStorage
-        const regData = sessionStorage.getItem("registrationData");
-        if (!regData) {
-          toast.error("Registration data not found. Please register again.");
-          router.push("/register");
+        if (verifyRes.status === 200) {
+          // 2. Get registration data from sessionStorage
+          if (!regData) {
+            toast.error("Registration data not found. Please register again.");
+            router.push("/register");
+            return;
+          }
+          const formData = JSON.parse(regData);
+          // 3. Register user using FormData
+          const registerFormData = new FormData();
+          registerFormData.append("username", formData.username);
+          registerFormData.append("email", formData.email);
+          registerFormData.append("password", formData.password);
+          registerFormData.append("first_name", formData.firstName);
+          registerFormData.append("last_name", formData.lastName);
+          const regRes = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register/`,
+            registerFormData
+          );
+          if (regRes.status === 200) {
+            toast.success("Registration successful! Please login.");
+            sessionStorage.removeItem("registrationData");
+            router.push("/login");
+          } else {
+            toast.error(regRes.data?.message || "Registration failed.");
+            setIsVerifying(false);
+          }
+        } else {
+          toast.error(verifyRes.data?.message || "Invalid OTP.");
+          setIsVerifying(false);
+        }
+      } else if (resetPassword === "true") {
+        // Reset password flow
+        const email = sessionStorage.getItem("email");
+        if (!email) {
+          toast.error("Email not found. Please try again.");
+          setIsVerifying(false);
           return;
         }
-        const formData = JSON.parse(regData);
-        // 3. Register user using FormData
-        const registerFormData = new FormData();
-        registerFormData.append("username", formData.username);
-        registerFormData.append("email", formData.email);
-        registerFormData.append("password", formData.password);
-        registerFormData.append("first_name", formData.firstName);
-        registerFormData.append("last_name", formData.lastName);
-        const regRes = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register/`,
-          registerFormData
-        );
-        if (regRes.status === 200) {
-          toast.success("Registration successful! Please login.");
-          sessionStorage.removeItem("registrationData");
-          router.push("/login");
-        } else {
-          toast.error(regRes.data?.message || "Registration failed.");
+        const body = {
+          email,
+          otp: fullOtp,
+          option: "reset_password",
+        };
+        try {
+          const verifyRes = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/verify_otp/`,
+            body,
+            { headers: { "Content-Type": "application/json" } }
+          );
+          if (verifyRes.status === 200) {
+            console.log("Reset password verify response:", verifyRes.data);
+            if (
+              verifyRes.data &&
+              verifyRes.data.data &&
+              verifyRes.data.data.access
+            ) {
+              sessionStorage.setItem(
+                "access_token",
+                verifyRes.data.data.access
+              );
+            }
+            router.push("/reset-password");
+          } else {
+            toast.error(verifyRes.data?.message || "Invalid OTP.");
+            setIsVerifying(false);
+          }
+        } catch (error) {
+          if (error.response) {
+            toast.error(error.response.data.message || "Error verifying OTP.");
+          } else {
+            toast.error("An error occurred. Please try again.");
+          }
           setIsVerifying(false);
         }
       } else {
-        toast.error(verifyRes.data?.message || "Invalid OTP.");
+        toast.error("Session expired or invalid. Please try again.");
         setIsVerifying(false);
       }
     } catch (error) {

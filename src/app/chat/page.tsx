@@ -220,33 +220,33 @@ export default function ChatPage() {
     setChatMessages([]);
     // If a first message is provided (from EmptyChatScreen), create a new chat as before
     if (firstMessage && firstMessage.trim()) {
-      try {
-        const res = await authRequest(
-          {
-            method: "POST",
-            url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/create/`,
-            // data: { title: "New Chat" },
-          },
-          logout
-        );
-        await fetchChats();
-        if (res.data && res.data.chat_id) {
+    try {
+      const res = await authRequest(
+        {
+          method: "POST",
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/create/`,
+          // data: { title: "New Chat" },
+        },
+        logout
+      );
+      await fetchChats();
+      if (res.data && res.data.chat_id) {
           setShowEmptyChatScreen(false);
-          await handleOpenChat(res.data.chat_id);
+        await handleOpenChat(res.data.chat_id);
           handleSubmit(firstMessage, res.data.chat_id);
           // Set chat title to first 10 characters of the first prompt
           handleUpdateChatTitle(res.data.chat_id, firstMessage.slice(0, 10));
-        }
-      } catch (error) {
-        console.error(error);
-        if (axios.isAxiosError(error)) {
+      }
+    } catch (error) {
+      console.error(error);
+      if (axios.isAxiosError(error)) {
           toast.error(
             error.response?.data?.message || "Failed to create chat."
           );
-        } else {
-          toast.error("An unexpected error occurred.");
-        }
+      } else {
+        toast.error("An unexpected error occurred.");
       }
+    }
     }
   };
 
@@ -475,18 +475,18 @@ export default function ChatPage() {
         {showEmptyChatScreen ? (
           <EmptyChatScreen handleNewChat={handleNewChat} />
         ) : (
-          <ChatMainArea
-            chatMessages={chatMessages}
-            loadingMessages={loadingMessages}
-            selectedChatId={selectedChatId}
-            message={message}
-            setMessage={setMessage}
-            handleSubmit={(e) => handleSubmit(e)}
-            handleNewChat={handleNewChat}
-            inputRef={inputRef}
-            sidebarOpen={sidebarOpen}
-            messagesEndRef={messagesEndRef}
-          />
+        <ChatMainArea
+          chatMessages={chatMessages}
+          loadingMessages={loadingMessages}
+          selectedChatId={selectedChatId}
+          message={message}
+          setMessage={setMessage}
+          handleSubmit={(e) => handleSubmit(e)}
+          handleNewChat={handleNewChat}
+          inputRef={inputRef}
+          sidebarOpen={sidebarOpen}
+          messagesEndRef={messagesEndRef}
+        />
         )}
       </div>
     </div>
