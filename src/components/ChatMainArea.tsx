@@ -301,7 +301,7 @@ const ChatMainArea: React.FC<ChatMainAreaProps> = ({
             <input
               ref={inputRef}
               type="text"
-              placeholder="Send a message..."
+              placeholder="Ask PSA Something..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className="flex-1 bg-gray-800/90 text-white placeholder-gray-400 rounded-l-full px-6 py-4 focus:outline-none text-sm max-w-7xl"

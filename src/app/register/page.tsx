@@ -22,6 +22,9 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  type FormFields = keyof typeof formData;
+  type ErrorsType = Partial<Record<FormFields, string>>;
+  const [errors, setErrors] = useState<ErrorsType>({});
 
   const router = useRouter();
 
@@ -72,6 +75,18 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    // Check for empty fields
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      if (!value.trim()) {
+        newErrors[key] = "This field is required";
+      }
+    });
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      setIsSubmitting(false);
+      return;
+    }
     if (!validateUsername(formData.username, formData.email)) {
       setIsSubmitting(false);
       return;
@@ -148,8 +163,12 @@ export default function Register() {
                 className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
                 style={{ backgroundColor: "#1B3A5D" }}
                 placeholder="First Name"
-                required
               />
+              {errors.firstName && (
+                <div className="text-red-400 text-xs mt-1">
+                  {errors.firstName}
+                </div>
+              )}
             </div>
 
             <div>
@@ -168,8 +187,12 @@ export default function Register() {
                 className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
                 style={{ backgroundColor: "#1B3A5D" }}
                 placeholder="Last Name"
-                required
               />
+              {errors.lastName && (
+                <div className="text-red-400 text-xs mt-1">
+                  {errors.lastName}
+                </div>
+              )}
             </div>
 
             <div>
@@ -188,8 +211,12 @@ export default function Register() {
                 className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
                 style={{ backgroundColor: "#1B3A5D" }}
                 placeholder="Username"
-                required
               />
+              {errors.username && (
+                <div className="text-red-400 text-xs mt-1">
+                  {errors.username}
+                </div>
+              )}
             </div>
 
             <div>
@@ -205,8 +232,10 @@ export default function Register() {
                 className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
                 style={{ backgroundColor: "#1B3A5D" }}
                 placeholder="Email"
-                required
               />
+              {errors.email && (
+                <div className="text-red-400 text-xs mt-1">{errors.email}</div>
+              )}
             </div>
 
             <div>
@@ -226,8 +255,12 @@ export default function Register() {
                   className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
                   style={{ backgroundColor: "#1B3A5D" }}
                   placeholder="Password"
-                  required
                 />
+                {errors.password && (
+                  <div className="text-red-400 text-xs mt-1">
+                    {errors.password}
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -259,8 +292,12 @@ export default function Register() {
                   className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
                   style={{ backgroundColor: "#1B3A5D" }}
                   placeholder="Confirm Password"
-                  required
                 />
+                {errors.confirmPassword && (
+                  <div className="text-red-400 text-xs mt-1">
+                    {errors.confirmPassword}
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}

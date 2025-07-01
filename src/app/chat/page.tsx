@@ -157,7 +157,7 @@ export default function ChatPage() {
       return;
     }
     fetchChats();
-  }, [fetchChats]);
+  }, [fetchChats, router]);
 
   // User data
   const user = {
@@ -231,6 +231,8 @@ export default function ChatPage() {
         await handleOpenChat(res.data.chat_id);
         if (firstMessage && firstMessage.trim()) {
           handleSubmit(firstMessage, res.data.chat_id);
+          // Set chat title to first 10 characters of the first prompt
+          handleUpdateChatTitle(res.data.chat_id, firstMessage.slice(0, 10));
         }
       }
     } catch (error) {
