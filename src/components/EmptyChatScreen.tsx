@@ -31,12 +31,12 @@ const EmptyChatScreen: React.FC<EmptyChatScreenProps> = ({ handleNewChat }) => {
       </p>
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md flex justify-center"
+        className="w-full max-w-sm flex justify-center"
       >
         <input
           ref={inputRef}
           type="text"
-          placeholder="Send your message..."
+          placeholder="Ask PSA something..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="flex-1 bg-gray-800/90 text-white placeholder-gray-400 rounded-l-full px-6 py-4 focus:outline-none text-sm"

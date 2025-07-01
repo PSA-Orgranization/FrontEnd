@@ -38,6 +38,55 @@ export default function ProfileCard({ isOpen, onClose, user }) {
     router.push("/");
   };
 
+  // Handles state for problem solving accounts
+  const [problemSolvingAccounts, setProblemSolvingAccounts] = useState({
+    cf: { id: null, handle: "" },
+    atcoder: { id: null, handle: "" },
+  });
+  const [accountsLoading, setAccountsLoading] = useState(false);
+  const [accountsError, setAccountsError] = useState("");
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setAccountsLoading(true);
+    setAccountsError("");
+    const accountsPromise = authRequest({
+      method: "GET",
+      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/problem_solving_accounts/`,
+    });
+    accountsPromise
+      .then((res) => {
+        const accounts = res.data.data || [];
+        const cf = accounts.find(
+          (acc) => acc.account_type.account_type === "Codeforces"
+        );
+        const atcoder = accounts.find(
+          (acc) => acc.account_type.account_type === "AtCoder"
+        );
+        setProblemSolvingAccounts({
+          cf: { id: cf ? cf.id : null, handle: cf ? cf.handle : "" },
+          atcoder: {
+            id: atcoder ? atcoder.id : null,
+            handle: atcoder ? atcoder.handle : "",
+          },
+        });
+        setCfHandle(cf ? cf.handle : "");
+        setCfHandleInput(cf ? cf.handle : "");
+        setAtcoderHandle(atcoder ? atcoder.handle : "");
+        setAtcoderHandleInput(atcoder ? atcoder.handle : "");
+      })
+      .catch((err) => {
+        let message = "Failed to load accounts";
+        if (err?.response?.data?.message) {
+          message = err.response.data.message;
+        } else if (err?.message) {
+          message = err.message;
+        }
+        setAccountsError(message);
+      })
+      .finally(() => setAccountsLoading(false));
+  }, [isOpen]);
+
   // Handles state for Codeforces handle
   const [cfHandle, setCfHandle] = useState("");
   const [cfHandleInput, setCfHandleInput] = useState("");
@@ -49,20 +98,6 @@ export default function ProfileCard({ isOpen, onClose, user }) {
 
   // Add refs for input focus
   const cfHandleInputRef = useRef(null);
-
-  // Load current handle if available (from user prop or localStorage)
-  useEffect(() => {
-    if (user && user.cfHandle) {
-      setCfHandle(user.cfHandle);
-      setCfHandleInput(user.cfHandle);
-    } else if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("cfHandle");
-      if (stored) {
-        setCfHandle(stored);
-        setCfHandleInput(stored);
-      }
-    }
-  }, [user]);
 
   // Save Codeforces handle
   const handleSaveCfHandle = async () => {
@@ -79,9 +114,6 @@ export default function ProfileCard({ isOpen, onClose, user }) {
       setCfHandle(cfHandleInput);
       setCfHandleSuccess("Handle saved successfully!");
       setCfHandleEditing(false);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("cfHandle", cfHandleInput);
-      }
     } catch (err) {
       let message = "Error saving handle";
       if (err?.response?.data?.message) {
@@ -119,12 +151,18 @@ export default function ProfileCard({ isOpen, onClose, user }) {
     setCfHandleError("");
     setCfHandleSuccess("");
     try {
-      // Optionally call backend to delete handle here
+      const id = problemSolvingAccounts.cf.id;
+      if (!id) throw new Error("No Codeforces account to delete");
+      await authRequest({
+        method: "DELETE",
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/problem_solving_account/${id}/`,
+      });
+      setProblemSolvingAccounts((prev) => ({
+        ...prev,
+        cf: { id: null, handle: "" },
+      }));
       setCfHandle("");
       setCfHandleInput("");
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("cfHandle");
-      }
     } catch (err) {
       setCfHandleError("Failed to delete handle");
     } finally {
@@ -144,19 +182,6 @@ export default function ProfileCard({ isOpen, onClose, user }) {
   // Add refs for input focus
   const atcoderHandleInputRef = useRef(null);
 
-  useEffect(() => {
-    if (user && user.atcoderHandle) {
-      setAtcoderHandle(user.atcoderHandle);
-      setAtcoderHandleInput(user.atcoderHandle);
-    } else if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("atcoderHandle");
-      if (stored) {
-        setAtcoderHandle(stored);
-        setAtcoderHandleInput(stored);
-      }
-    }
-  }, [user]);
-
   // Save AtCoder handle
   const handleSaveAtcoderHandle = async () => {
     setAtcoderHandleLoading(true);
@@ -172,9 +197,6 @@ export default function ProfileCard({ isOpen, onClose, user }) {
       setAtcoderHandle(atcoderHandleInput);
       setAtcoderHandleSuccess("Handle saved successfully!");
       setAtcoderHandleEditing(false);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("atcoderHandle", atcoderHandleInput);
-      }
     } catch (err) {
       let message = "Error saving handle";
       if (err?.response?.data?.message) {
@@ -212,12 +234,18 @@ export default function ProfileCard({ isOpen, onClose, user }) {
     setAtcoderHandleError("");
     setAtcoderHandleSuccess("");
     try {
-      // Optionally call backend to delete handle here
+      const id = problemSolvingAccounts.atcoder.id;
+      if (!id) throw new Error("No AtCoder account to delete");
+      await authRequest({
+        method: "DELETE",
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/problem_solving_account/${id}/`,
+      });
+      setProblemSolvingAccounts((prev) => ({
+        ...prev,
+        atcoder: { id: null, handle: "" },
+      }));
       setAtcoderHandle("");
       setAtcoderHandleInput("");
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("atcoderHandle");
-      }
     } catch (err) {
       setAtcoderHandleError("Failed to delete handle");
     } finally {

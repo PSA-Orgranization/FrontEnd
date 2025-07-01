@@ -42,6 +42,7 @@ export default function ChatPage() {
   const [previous30DaysChats, setPrevious30DaysChats] = useState<Chat[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [showEmptyChatScreen, setShowEmptyChatScreen] = useState(false);
 
   // Check authentication on component mount
   const checkAuth = () => {
@@ -213,36 +214,46 @@ export default function ChatPage() {
 
   // Handle New Chat button click
   const handleNewChat = async (firstMessage?: string) => {
-    // If already on an empty chat, do not create a new one
-    if (selectedChatId !== null && chatMessages.length === 0) {
-      return;
-    }
-    try {
-      const res = await authRequest(
-        {
-          method: "POST",
-          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/create/`,
-          // data: { title: "New Chat" },
-        },
-        logout
-      );
-      await fetchChats();
-      if (res.data && res.data.chat_id) {
-        await handleOpenChat(res.data.chat_id);
-        if (firstMessage && firstMessage.trim()) {
+    setShowEmptyChatScreen(true);
+    if (isMobile) setSidebarOpen(false);
+    setSelectedChatId(null);
+    setChatMessages([]);
+    // If a first message is provided (from EmptyChatScreen), create a new chat as before
+    if (firstMessage && firstMessage.trim()) {
+      try {
+        const res = await authRequest(
+          {
+            method: "POST",
+            url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/create/`,
+            // data: { title: "New Chat" },
+          },
+          logout
+        );
+        await fetchChats();
+        if (res.data && res.data.chat_id) {
+          setShowEmptyChatScreen(false);
+          await handleOpenChat(res.data.chat_id);
           handleSubmit(firstMessage, res.data.chat_id);
           // Set chat title to first 10 characters of the first prompt
           handleUpdateChatTitle(res.data.chat_id, firstMessage.slice(0, 10));
         }
-      }
-    } catch (error) {
-      console.error(error);
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Failed to create chat.");
-      } else {
-        toast.error("An unexpected error occurred.");
+      } catch (error) {
+        console.error(error);
+        if (axios.isAxiosError(error)) {
+          toast.error(
+            error.response?.data?.message || "Failed to create chat."
+          );
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
       }
     }
+  };
+
+  // Hide EmptyChatScreen when a chat is selected
+  const handleOpenChatWithHide = async (chatId: number) => {
+    setShowEmptyChatScreen(false);
+    await handleOpenChat(chatId);
   };
 
   // Handle chat deletion
@@ -420,7 +431,7 @@ export default function ChatPage() {
         yesterdayChats={yesterdayChats}
         previous30DaysChats={previous30DaysChats}
         selectedChatId={selectedChatId}
-        onSelectChat={handleOpenChat}
+        onSelectChat={handleOpenChatWithHide}
         onNewChat={() => handleNewChat()}
         onDeleteChat={(id) => handleDeleteChat(id)()}
         sidebarOpen={sidebarOpen}
@@ -461,18 +472,22 @@ export default function ChatPage() {
             />
           </div>
         </div>
-        <ChatMainArea
-          chatMessages={chatMessages}
-          loadingMessages={loadingMessages}
-          selectedChatId={selectedChatId}
-          message={message}
-          setMessage={setMessage}
-          handleSubmit={(e) => handleSubmit(e)}
-          handleNewChat={handleNewChat}
-          inputRef={inputRef}
-          sidebarOpen={sidebarOpen}
-          messagesEndRef={messagesEndRef}
-        />
+        {showEmptyChatScreen ? (
+          <EmptyChatScreen handleNewChat={handleNewChat} />
+        ) : (
+          <ChatMainArea
+            chatMessages={chatMessages}
+            loadingMessages={loadingMessages}
+            selectedChatId={selectedChatId}
+            message={message}
+            setMessage={setMessage}
+            handleSubmit={(e) => handleSubmit(e)}
+            handleNewChat={handleNewChat}
+            inputRef={inputRef}
+            sidebarOpen={sidebarOpen}
+            messagesEndRef={messagesEndRef}
+          />
+        )}
       </div>
     </div>
   );
