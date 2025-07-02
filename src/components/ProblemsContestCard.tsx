@@ -44,17 +44,17 @@ export default function ProblemsContestCard({ isOpen, onClose }) {
   ];
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-20">
-      <div className="bg-[#041B2D] scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-4xl md:rounded-lg shadow-lg overflow-y-auto">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="dark:bg-[#041B2D] bg-[#177AD6] scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-4xl md:rounded-lg shadow-lg overflow-y-auto">
         {/* Header - made sticky for mobile scrolling */}
-        <div className="flex items-center px-4 md:px-6 py-4 border-b border-gray-700 sticky top-0 bg-[#041B2D] z-10">
+        <div className="flex items-center dark:bg-[#041B2D] bg-[#177AD6] px-4 md:px-6 py-4 border-b dark:border-gray-700  sticky top-0 z-10">
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white mr-3 cursor-pointer"
           >
             <ArrowLeft size={20} />
           </button>
-          <h2 className="text-lg font-medium text-white">
+          <h2 className="text-lg font-medium  text-white">
             Problems solved for each Type of contests
           </h2>
         </div>

@@ -220,33 +220,33 @@ export default function ChatPage() {
     setChatMessages([]);
     // If a first message is provided (from EmptyChatScreen), create a new chat as before
     if (firstMessage && firstMessage.trim()) {
-    try {
-      const res = await authRequest(
-        {
-          method: "POST",
-          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/create/`,
-          // data: { title: "New Chat" },
-        },
-        logout
-      );
-      await fetchChats();
-      if (res.data && res.data.chat_id) {
+      try {
+        const res = await authRequest(
+          {
+            method: "POST",
+            url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat/create/`,
+            // data: { title: "New Chat" },
+          },
+          logout
+        );
+        await fetchChats();
+        if (res.data && res.data.chat_id) {
           setShowEmptyChatScreen(false);
-        await handleOpenChat(res.data.chat_id);
+          await handleOpenChat(res.data.chat_id);
           handleSubmit(firstMessage, res.data.chat_id);
           // Set chat title to first 10 characters of the first prompt
-          handleUpdateChatTitle(res.data.chat_id, firstMessage.slice(0, 10));
-      }
-    } catch (error) {
-      console.error(error);
-      if (axios.isAxiosError(error)) {
+          handleUpdateChatTitle(res.data.chat_id, firstMessage.slice(0, 20));
+        }
+      } catch (error) {
+        console.error(error);
+        if (axios.isAxiosError(error)) {
           toast.error(
             error.response?.data?.message || "Failed to create chat."
           );
-      } else {
-        toast.error("An unexpected error occurred.");
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
       }
-    }
     }
   };
 
@@ -364,9 +364,7 @@ export default function ChatPage() {
     <div className="flex h-screen text-white">
       {/* Mobile Bottom Nav */}
       <div
-        className={`fixed md:hidden bottom-0 left-0 right-0 border-t border-gray-800 flex justify-around items-center h-16 z-40 shadow-t-lg ${
-          sidebarOpen ? "bg-[#071830] " : "bg-transparent"
-        }`}
+        className={`fixed md:hidden bottom-0 left-0 right-0  flex justify-around items-center h-16 z-50 shadow-t-lg dark:bg-[#041B2D] bg-[#448CDD]`}
       >
         <Link
           href="/chat"
@@ -377,13 +375,10 @@ export default function ChatPage() {
             setSidebarOpen(false);
           }}
         >
-          <MessageSquare
-            className=" flex items-center justify-center h-8 cursor-pointer"
-            // style={{ fill: "currentColor", stroke: "none" }}
-          />
-
+          <MessageSquare className=" flex items-center justify-center h-8 cursor-pointer" />
           <span className="text-xs">Chat</span>
         </Link>
+
         <button
           onClick={() => {
             setProfileOpen(true);
@@ -392,10 +387,10 @@ export default function ChatPage() {
           }}
           className="flex flex-col items-center justify-center w-1/3"
         >
-          <UserCircle className="text-gray-400 flex items-center justify-center h-8 cursor-pointer" />
-
+          <UserCircle className="flex items-center justify-center h-8 cursor-pointer" />
           <span className="text-xs">Profile</span>
         </button>
+
         <button
           onClick={() => {
             setSettingsOpen(true);
@@ -404,8 +399,7 @@ export default function ChatPage() {
           }}
           className="flex flex-col items-center justify-center w-1/3"
         >
-          <Settings className="text-gray-400 flex items-center justify-center h-8 cursor-pointer" />
-
+          <Settings className="flex items-center justify-center h-8 cursor-pointer" />
           <span className="text-xs">Settings</span>
         </button>
       </div>
@@ -452,16 +446,26 @@ export default function ChatPage() {
           <button onClick={toggleSidebar} className="cursor-pointer">
             <div className="w-12 h-12 rounded-full flex items-center justify-center">
               <Image
-                src="/PSA-Logo.svg"
-                alt="PSA Logo"
+                src="/PSA-LIGHT-LOGO.svg"
+                alt="PSA Logo Light"
                 width={48}
                 height={48}
-                className="w-12 h-12"
+                priority
+                className="block dark:hidden"
+              />
+              {/* Dark mode logo */}
+              <Image
+                src="/PSA-Dark-Logo.svg"
+                alt="PSA Logo Dark"
+                width={48}
+                height={48}
+                priority
+                className="hidden dark:block"
               />
             </div>
           </button>
 
-          <div className="md:flex hidden">
+          <div className="md:flex hidden mr-10">
             <UserCircle
               className="h-6 w-6 text-white mr-4 cursor-pointer"
               onClick={() => setProfileOpen(true)}
@@ -475,18 +479,18 @@ export default function ChatPage() {
         {showEmptyChatScreen ? (
           <EmptyChatScreen handleNewChat={handleNewChat} />
         ) : (
-        <ChatMainArea
-          chatMessages={chatMessages}
-          loadingMessages={loadingMessages}
-          selectedChatId={selectedChatId}
-          message={message}
-          setMessage={setMessage}
-          handleSubmit={(e) => handleSubmit(e)}
-          handleNewChat={handleNewChat}
-          inputRef={inputRef}
-          sidebarOpen={sidebarOpen}
-          messagesEndRef={messagesEndRef}
-        />
+          <ChatMainArea
+            chatMessages={chatMessages}
+            loadingMessages={loadingMessages}
+            selectedChatId={selectedChatId}
+            message={message}
+            setMessage={setMessage}
+            handleSubmit={(e) => handleSubmit(e)}
+            handleNewChat={handleNewChat}
+            inputRef={inputRef}
+            sidebarOpen={sidebarOpen}
+            messagesEndRef={messagesEndRef}
+          />
         )}
       </div>
     </div>

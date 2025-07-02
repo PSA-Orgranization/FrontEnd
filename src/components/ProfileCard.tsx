@@ -270,8 +270,8 @@ export default function ProfileCard({ isOpen, onClose, user }) {
         onClose={() => setTagModalOpen(false)}
       />
 
-      <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-10 ">
-        <div className="bg-[#041B2D] scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:rounded-lg shadow-lg overflow-y-auto">
+      <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-40 ">
+        <div className="dark:bg-[#041B2D] bg-[#177AD6] scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:rounded-lg shadow-lg overflow-y-auto">
           {/* Header */}
           <div className="flex justify-between items-center px-4 md:px-8 py-5 border-b border-white-400 sticky top-0 z-10">
             <div className="flex items-center gap-3">
@@ -289,7 +289,7 @@ export default function ProfileCard({ isOpen, onClose, user }) {
           </div>
 
           {/* User Info */}
-          <div className="p-4 md:p-8 border-b border-gray-800">
+          <div className="p-4 md:p-8  border-gray-800">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <div>
                 <div className="flex items-center mb-1">
@@ -321,10 +321,10 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                   <div className="flex items-center gap-2 mb-2">
                     <input
                       type="text"
-                      className={`bg-gray-800 text-white rounded px-2 py-1 flex-1 outline-none border transition ${
+                      className={`dark:bg-gray-800 bg-[#1773C8] text-white rounded px-2 py-1 flex-1 outline-none border transition ${
                         cfHandleEditing
-                          ? "border-blue-500 focus:border-blue-400"
-                          : "border-gray-700 focus:border-blue-500"
+                          ? "border-gray-700 focus:border-blue-500"
+                          : "border-blue-500 focus:border-blue-400"
                       } ${
                         !cfHandleEditing && cfHandle ? "cursor-default" : ""
                       }`}
@@ -429,12 +429,12 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                   </div>
 
                   <div
-                    className="flex text-sm items-center text-white cursor-pointer transition-all duration-200 
+                    className="flex text-sm  items-center text-white cursor-pointer transition-all duration-200 
                  hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0 
                  border border-transparent hover:border-blue-500/30"
                     onClick={() => setProblemsModalOpen(true)}
                   >
-                    <span className="text-gray-200 group-hover:text-white">
+                    <span className="text-gray-200  group-hover:text-white">
                       Problems solved for each Type of contests{" "}
                     </span>
                     <span className="ml-auto text-blue-400 group-hover:text-white">
@@ -454,10 +454,10 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                   <div className="flex items-center gap-2 mb-2">
                     <input
                       type="text"
-                      className={`bg-gray-800 text-white rounded px-2 py-1 flex-1 outline-none border transition ${
+                      className={`dark:bg-gray-800 bg-[#1773C8] text-white rounded px-2 py-1 flex-1 outline-none border transition ${
                         atcoderHandleEditing
-                          ? "border-blue-500 focus:border-blue-400"
-                          : "border-gray-700 focus:border-blue-500"
+                          ? "border-gray-700 focus:border-blue-500"
+                          : "border-blue-500 focus:border-blue-400"
                       } ${
                         !atcoderHandleEditing && atcoderHandle
                           ? "cursor-default"

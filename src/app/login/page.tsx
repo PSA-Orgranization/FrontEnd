@@ -79,12 +79,26 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="flex justify-center mb-12 pt-10">
-        <Image src="/PSA-Logo.svg" alt="PSA Logo" width={208} height={208} />
+        {/* Light mode logo */}
+        <Image
+          src="/PSA-LIGHT-LOGO.svg"
+          alt="PSA Logo Light"
+          width={208}
+          height={208}
+          priority
+          className="block dark:hidden"
+        />
+        {/* Dark mode logo */}
+        <Image
+          src="/PSA-Dark-Logo.svg"
+          alt="PSA Logo Dark"
+          width={208}
+          height={208}
+          priority
+          className="hidden dark:block"
+        />
       </div>
-      <div
-        className="w-4/5 sm:w-full max-w-md py-7 px-4 sm:p-7 rounded-4xl text-white shadow-xl"
-        style={{ backgroundColor: "#082540" }}
-      >
+      <div className="w-4/5 sm:w-full max-w-md py-7 px-4 sm:p-7 rounded-3xl text-white shadow-xl bg-[#1773C8] dark:bg-[#082540]">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
@@ -99,8 +113,7 @@ export default function Login() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-              style={{ backgroundColor: "#1B3A5D" }}
+              className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80 bg-[#448CDD] dark:bg-[#1B3A5D]"
               placeholder="Email"
               required
             />
@@ -120,8 +133,7 @@ export default function Login() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-                style={{ backgroundColor: "#1B3A5D" }}
+                className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80 bg-[#448CDD] dark:bg-[#1B3A5D]"
                 placeholder="Password"
                 required
               />
@@ -155,7 +167,7 @@ export default function Login() {
       <div className="text-center mt-2 text-sm space-y-1 pb-10">
         <p className="text-white">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-blue-400 hover:text-blue-300">
+          <Link href="/register" className=" text-blue-800 hover:text-blue-400">
             Sign up now!
           </Link>
         </p>
@@ -163,7 +175,7 @@ export default function Login() {
           Forgot your password?{" "}
           <Link
             href="/check-account"
-            className="text-blue-400 hover:text-blue-300"
+            className=" text-blue-800 hover:text-blue-400"
           >
             Reset your Password now!
           </Link>

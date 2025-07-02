@@ -51,8 +51,8 @@ export default function SettingsCard({
         onClose={() => setChangePasswordOpen(false)}
       />
 
-      <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-10 ">
-        <div className="bg-[#041B2D] scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-lg md:rounded-lg shadow-lg overflow-y-auto">
+      <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-40 ">
+        <div className="dark:bg-[#041B2D] bg-[#177AD6] scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-lg md:rounded-lg shadow-lg overflow-y-auto">
           {/* Header */}
           <div className="flex justify-between items-center px-4 md:px-8 py-5 border-b border-white-400 sticky top-0 z-10">
             <div className="flex items-center gap-3">
@@ -82,13 +82,13 @@ export default function SettingsCard({
                     Permanently remove all conversation history
                   </p>
                 </div>
-                <Button
-                  className="p-2 bg-red-600 hover:bg-red-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md"
+                <button
+                  className="p-2 bg-red-600 cursor-pointer hover:bg-red-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md"
                   onClick={onDeleteAll}
                   title="Delete all chats"
                 >
                   <Trash2 size={18} className="text-white" />
-                </Button>
+                </button>
               </div>
             </div>
 
@@ -103,13 +103,13 @@ export default function SettingsCard({
                     Change your account password
                   </p>
                 </div>
-                <Button
-                  className="p-2 bg-blue-600 hover:bg-blue-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md"
+                <button
+                  className="p-2 bg-blue-600 cursor-pointer hover:bg-blue-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md"
                   onClick={handleChangePassword}
                   title="Change password"
                 >
                   <Key size={18} className="text-white" />
-                </Button>
+                </button>
               </div>
             </div>
 
@@ -122,13 +122,13 @@ export default function SettingsCard({
                     Sign out of your account
                   </p>
                 </div>
-                <Button
-                  className="p-2 bg-orange-600 hover:bg-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md"
+                <button
+                  className="p-2 bg-orange-600 cursor-pointer hover:bg-orange-700 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md"
                   onClick={handleLogout}
                   title="Logout"
                 >
                   <LogOut size={18} className="text-white" />
-                </Button>
+                </button>
               </div>
             </div>
           </div>

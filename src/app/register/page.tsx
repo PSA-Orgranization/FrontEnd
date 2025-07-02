@@ -151,17 +151,24 @@ export default function Register() {
     <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="flex justify-center mb-12 pt-10">
         <Image
-          src="/PSA-Logo.svg"
-          alt="PSA Logo"
+          src="/PSA-LIGHT-LOGO.svg"
+          alt="PSA Logo Light"
           width={208}
           height={208}
-          className="w-52 h-52"
+          priority
+          className="block dark:hidden"
+        />
+        {/* Dark mode logo */}
+        <Image
+          src="/PSA-Dark-Logo.svg"
+          alt="PSA Logo Dark"
+          width={208}
+          height={208}
+          priority
+          className="hidden dark:block"
         />
       </div>
-      <div
-        className="w-4/5 sm:w-full max-w-3xl py-7 px-4 sm:p-7 rounded-4xl text-white shadow-xl"
-        style={{ backgroundColor: "#082540" }}
-      >
+      <div className="w-4/5 sm:w-full max-w-3xl py-7 px-4 sm:p-7 rounded-4xl text-white shadow-xl bg-[#1773C8] dark:bg-[#082540]">
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-12">
             <div>
@@ -177,8 +184,7 @@ export default function Register() {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-                style={{ backgroundColor: "#1B3A5D" }}
+                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80 bg-[#448CDD] dark:bg-[#1B3A5D]"
                 placeholder="First Name"
               />
               {errors.firstName && (
@@ -201,8 +207,7 @@ export default function Register() {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-                style={{ backgroundColor: "#1B3A5D" }}
+                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80 bg-[#448CDD] dark:bg-[#1B3A5D]"
                 placeholder="Last Name"
               />
               {errors.lastName && (
@@ -225,8 +230,7 @@ export default function Register() {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-                style={{ backgroundColor: "#1B3A5D" }}
+                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80 bg-[#448CDD] dark:bg-[#1B3A5D]"
                 placeholder="Username"
               />
               {errors.username && (
@@ -246,8 +250,7 @@ export default function Register() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-                style={{ backgroundColor: "#1B3A5D" }}
+                className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80 bg-[#448CDD] dark:bg-[#1B3A5D]"
                 placeholder="Email"
               />
               {errors.email && (
@@ -269,8 +272,7 @@ export default function Register() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-                  style={{ backgroundColor: "#1B3A5D" }}
+                  className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80 bg-[#448CDD] dark:bg-[#1B3A5D]"
                   placeholder="Password"
                 />
                 {errors.password && (
@@ -306,8 +308,7 @@ export default function Register() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-                  style={{ backgroundColor: "#1B3A5D" }}
+                  className="w-full py-2 px-3 sm:py-3 pr-12 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80 bg-[#448CDD] dark:bg-[#1B3A5D]"
                   placeholder="Confirm Password"
                 />
                 {errors.confirmPassword && (
@@ -347,7 +348,7 @@ export default function Register() {
           Do you have an account?
           <Link
             href="/login"
-            className="ml-1 text-blue-400 hover:text-blue-300"
+            className="ml-1 text-blue-800 hover:text-blue-400"
           >
             Login now!
           </Link>

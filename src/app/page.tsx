@@ -99,12 +99,23 @@ export default function Home() {
     <div className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden sm:bg-[url('/Background.svg')] bg-center">
       <div className="z-10 flex flex-col items-center pb-10">
         <div className="w-64 h-64 rounded-full flex items-center justify-center mb-8">
+          {/* Light mode logo */}
           <Image
-            src="/PSA-Logo.svg"
-            alt="PSA Logo"
+            src="/PSA-LIGHT-LOGO.svg"
+            alt="PSA Logo Light"
             width={208}
             height={208}
             priority
+            className="block dark:hidden"
+          />
+          {/* Dark mode logo */}
+          <Image
+            src="/PSA-Dark-Logo.svg"
+            alt="PSA Logo Dark"
+            width={208}
+            height={208}
+            priority
+            className="hidden dark:block"
           />
         </div>
         <h1

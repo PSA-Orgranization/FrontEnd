@@ -35,13 +35,26 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
-      <div className="flex justify-center mb-12">
-        <Image src="/PSA-Logo.svg" alt="PSA Logo" width={208} height={208} />
+      <div className="flex justify-center mb-12 ">
+        <Image
+          src="/PSA-LIGHT-LOGO.svg"
+          alt="PSA Logo Light"
+          width={208}
+          height={208}
+          priority
+          className="block dark:hidden"
+        />
+        {/* Dark mode logo */}
+        <Image
+          src="/PSA-Dark-Logo.svg"
+          alt="PSA Logo Dark"
+          width={208}
+          height={208}
+          priority
+          className="hidden dark:block"
+        />
       </div>
-      <div
-        className="w-4/5 sm:w-full max-w-md py-7 px-4 sm:p-7 rounded-4xl text-white shadow-xl"
-        style={{ backgroundColor: "#082540" }}
-      >
+      <div className="w-4/5 sm:w-full max-w-md py-7 px-4 sm:p-7 rounded-4xl text-white shadow-xl bg-[#1773C8] dark:bg-[#082540]">
         <form onSubmit={handleSubmit} className="space-y-6">
           <h2 className="text-center text-sm sm:text-xl font-medium mb-4">
             Enter your Email to reset the password
@@ -60,8 +73,8 @@ export default function ResetPassword() {
               name="email"
               value={email}
               onChange={handleChange}
-              className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80"
-              style={{ backgroundColor: "#1B3A5D" }}
+              className="w-full py-2 px-3 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-white/80 bg-[#448CDD] dark:bg-[#1B3A5D]"
+              // style={{ backgroundColor: "#1B3A5D" }}
               placeholder="Email"
               required
             />

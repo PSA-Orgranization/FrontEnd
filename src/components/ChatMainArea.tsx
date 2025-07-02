@@ -110,10 +110,7 @@ const ChatMainArea: React.FC<ChatMainAreaProps> = ({
                 // AI message (left)
                 return (
                   <div key={idx} className="flex flex-col items-start">
-                    <div
-                      className="py-2 px-3 sm:ml-2 sm:mt-2 rounded-2xl rounded-tl-none max-w-xs md:max-w-2xl"
-                      style={{ backgroundColor: "#0D263D" }}
-                    >
+                    <div className="py-2 px-3 sm:ml-2 sm:mt-2 rounded-2xl rounded-tl-none max-w-xs md:max-w-2xl bg-[#1773C8] dark:bg-[#0D263D]">
                       <div className="text-white text-sm space-y-1">
                         {msg.markdown_content === "__LOADING__" ? (
                           <DotLoader />
@@ -161,7 +158,7 @@ const ChatMainArea: React.FC<ChatMainAreaProps> = ({
                                   // For code blocks, add copy button
                                   if (isInline) {
                                     return (
-                                      <code className="bg-gray-700 text-green-400 px-1 py-0.5 rounded text-xs">
+                                      <code className="bg-gray-700 text-white px-1 py-0.5 rounded text-xs">
                                         {children}
                                       </code>
                                     );
@@ -196,7 +193,7 @@ const ChatMainArea: React.FC<ChatMainAreaProps> = ({
                                         {copiedIdx === idx ? (
                                           <Check
                                             size={16}
-                                            className="text-green-400"
+                                            className="text-text-white"
                                           />
                                         ) : (
                                           <Copy
@@ -205,7 +202,7 @@ const ChatMainArea: React.FC<ChatMainAreaProps> = ({
                                           />
                                         )}
                                       </button>
-                                      <code className="block bg-gray-800 text-green-400 p-3 rounded-lg text-xs overflow-x-auto">
+                                      <code className="block bg-gray-800 text-text-white p-3 rounded-lg text-xs overflow-x-auto">
                                         {children}
                                       </code>
                                     </div>
@@ -304,13 +301,11 @@ const ChatMainArea: React.FC<ChatMainAreaProps> = ({
               placeholder="Ask PSA Something..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="flex-1 bg-gray-800/90 text-white placeholder-gray-400 rounded-l-full px-6 py-4 focus:outline-none text-sm max-w-7xl"
-              style={{ backgroundColor: "#1E2933" }}
+              className="flex-1 text-white placeholder:text-white bg-[#448CDD] dark:bg-gray-800/90 rounded-l-full px-6 py-4 focus:outline-none text-sm max-w-7xl"
             />
             <button
               type="submit"
-              className="bg-gray-800/90 rounded-r-full px-6 py-4 flex items-center justify-center"
-              style={{ backgroundColor: "#1E2933" }}
+              className="bg-[#448CDD] dark:bg-gray-800/90 rounded-r-full px-6 py-4 flex items-center justify-center"
             >
               <SendHorizontal className="h-4 w-4 text-gray-400 cursor-pointer" />
             </button>

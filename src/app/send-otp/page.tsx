@@ -6,6 +6,7 @@ import Button from "@/components/Button";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function OTPVerification() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -190,10 +191,26 @@ export default function OTPVerification() {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center p-4">
-      <div
-        className="w-full max-w-sm rounded-4xl shadow-md p-8"
-        style={{ backgroundColor: "#082540" }}
-      >
+      <div className="flex justify-center mb-12">
+        <Image
+          src="/PSA-LIGHT-LOGO.svg"
+          alt="PSA Logo Light"
+          width={208}
+          height={208}
+          priority
+          className="block dark:hidden"
+        />
+        {/* Dark mode logo */}
+        <Image
+          src="/PSA-Dark-Logo.svg"
+          alt="PSA Logo Dark"
+          width={208}
+          height={208}
+          priority
+          className="hidden dark:block"
+        />
+      </div>
+      <div className="w-full max-w-sm rounded-4xl shadow-md p-8 bg-[#1773C8] dark:bg-[#082540]">
         <h1 className="text-2xl font-bold text-center text-white mb-6">OTP</h1>
 
         <form id="otp-form" onSubmit={handleSubmit} className="space-y-6">

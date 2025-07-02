@@ -56,7 +56,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       <Link href="/chat">
         <Button
           className="sm:w-full py-3 px-4 rounded-md text-left hover:bg-blue-800"
-          backGround="bg-[#082540]"
+          backGround="bg-[#448CDD] dark:bg-[#082540]"
           onClick={onNewChat}
         >
           New Chat
