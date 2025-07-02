@@ -23,7 +23,7 @@ const EmptyChatScreen: React.FC<EmptyChatScreenProps> = ({ handleNewChat }) => {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
       <Image
-        src="/PSA-LIGHT-LOGO.svg"
+        src="/PSA-Light-Logo.svg"
         alt="PSA Logo Light"
         width={80}
         height={80}
