@@ -193,7 +193,7 @@ export default function OTPVerification() {
     <div className="min-h-screen flex flex-col justify-center items-center p-4">
       <div className="flex justify-center mb-12">
         <Image
-          src="/PSA-LIGHT-LOGO.svg"
+          src="/PSA-Light-Logo.svg"
           alt="PSA Logo Light"
           width={208}
           height={208}

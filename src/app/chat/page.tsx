@@ -364,7 +364,7 @@ export default function ChatPage() {
     <div className="flex h-screen text-white">
       {/* Mobile Bottom Nav */}
       <div
-        className={`fixed md:hidden bottom-0 left-0 right-0  flex justify-around items-center h-16 z-50 shadow-t-lg dark:bg-[#041B2D] bg-[#448CDD]`}
+        className={`fixed md:hidden bottom-0 left-0 right-0 flex justify-around items-center h-16 z-50 shadow-t-lg dark:bg-[#041B2D] bg-[#448CDD]`}
       >
         <Link
           href="/chat"
@@ -446,7 +446,7 @@ export default function ChatPage() {
           <button onClick={toggleSidebar} className="cursor-pointer">
             <div className="w-12 h-12 rounded-full flex items-center justify-center">
               <Image
-                src="/PSA-LIGHT-LOGO.svg"
+                src="/PSA-Light-Logo.svg"
                 alt="PSA Logo Light"
                 width={48}
                 height={48}

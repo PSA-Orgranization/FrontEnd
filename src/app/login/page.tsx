@@ -81,7 +81,7 @@ export default function Login() {
       <div className="flex justify-center mb-12 pt-10">
         {/* Light mode logo */}
         <Image
-          src="/PSA-LIGHT-LOGO.svg"
+          src="/PSA-Light-Logo.svg"
           alt="PSA Logo Light"
           width={208}
           height={208}

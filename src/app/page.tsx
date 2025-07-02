@@ -101,7 +101,7 @@ export default function Home() {
         <div className="w-64 h-64 rounded-full flex items-center justify-center mb-8">
           {/* Light mode logo */}
           <Image
-            src="/PSA-LIGHT-LOGO.svg"
+            src="/PSA-Light-Logo.svg"
             alt="PSA Logo Light"
             width={208}
             height={208}

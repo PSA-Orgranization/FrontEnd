@@ -151,7 +151,7 @@ export default function Register() {
     <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="flex justify-center mb-12 pt-10">
         <Image
-          src="/PSA-LIGHT-LOGO.svg"
+          src="/PSA-Light-Logo.svg"
           alt="PSA Logo Light"
           width={208}
           height={208}
