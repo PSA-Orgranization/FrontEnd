@@ -6,6 +6,7 @@ import { X, LogOut, Trash2, Key, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ChangePasswordCard from "./ChangePasswordCard";
+import Cookies from "js-cookie";
 
 interface SettingsCardProps {
   isOpen: boolean;
@@ -27,8 +28,8 @@ export default function SettingsCard({
 
   // Function to clear authentication-related localStorage items
   const clearAuthStorage = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    Cookies.remove("access_token", { path: "/" });
+    Cookies.remove("refresh_token", { path: "/" });
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("first_name");

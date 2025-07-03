@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
+import Cookies from "js-cookie";
 
 const anta = Anta({
   weight: "400",
@@ -22,8 +23,8 @@ export default function Home() {
 
   // Function to clear authentication-related localStorage items
   const clearAuthStorage = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    Cookies.remove("access_token", { path: "/" });
+    Cookies.remove("refresh_token", { path: "/" });
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("first_name");
@@ -32,8 +33,8 @@ export default function Home() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const access = localStorage.getItem("access_token");
-      const refresh = localStorage.getItem("refresh_token");
+      const access = Cookies.get("access_token");
+      const refresh = Cookies.get("refresh_token");
       if (!access || !refresh) {
         // No tokens, stay on home
         return;
@@ -70,7 +71,11 @@ export default function Home() {
               refreshRes.data.access
             ) {
               // Save new access token and redirect
-              localStorage.setItem("access_token", refreshRes.data.access);
+              Cookies.set("access_token", refreshRes.data.access, {
+                secure: true,
+                sameSite: "strict",
+                path: "/",
+              });
               router.push("/chat");
             } else {
               // Refresh failed, stay on home

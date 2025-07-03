@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authRequest } from "../lib/utils";
 import { AiOutlineProfile } from "react-icons/ai";
+import Cookies from "js-cookie";
 
 export default function ProfileCard({ isOpen, onClose, user }) {
   const [problemsModalOpen, setProblemsModalOpen] = useState(false);
@@ -24,8 +25,8 @@ export default function ProfileCard({ isOpen, onClose, user }) {
 
   // Function to clear authentication-related localStorage items
   const clearAuthStorage = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    Cookies.remove("access_token", { path: "/" });
+    Cookies.remove("refresh_token", { path: "/" });
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("first_name");
@@ -58,10 +59,10 @@ export default function ProfileCard({ isOpen, onClose, user }) {
       .then((res) => {
         const accounts = res.data.data || [];
         const cf = accounts.find(
-          (acc) => acc.account_type.account_type === "Codeforces"
+          (acc) => acc.account_type.account_type === "cf"
         );
         const atcoder = accounts.find(
-          (acc) => acc.account_type.account_type === "AtCoder"
+          (acc) => acc.account_type.account_type === "atcoder"
         );
         setProblemSolvingAccounts({
           cf: { id: cf ? cf.id : null, handle: cf ? cf.handle : "" },
@@ -99,21 +100,29 @@ export default function ProfileCard({ isOpen, onClose, user }) {
   // Add refs for input focus
   const cfHandleInputRef = useRef(null);
 
-  // Save Codeforces handle
-  const handleSaveCfHandle = async () => {
-    setCfHandleLoading(true);
-    setCfHandleError("");
-    setCfHandleSuccess("");
+  // Generic save handle function
+  const handleSaveHandle = async (
+    type,
+    handleInput,
+    setHandle,
+    setHandleSuccess,
+    setHandleError,
+    setHandleLoading,
+    setHandleEditing
+  ) => {
+    setHandleLoading(true);
+    setHandleError("");
+    setHandleSuccess("");
     try {
       const res = await authRequest({
         method: "POST",
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/add_cf_handle/`,
-        data: { handle: cfHandleInput },
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/add_handle/`,
+        data: { handle: handleInput, account_type: type },
         headers: { "Content-Type": "application/json" },
       });
-      setCfHandle(cfHandleInput);
-      setCfHandleSuccess("Handle saved successfully!");
-      setCfHandleEditing(false);
+      setHandle(handleInput);
+      setHandleSuccess("Handle saved successfully!");
+      setHandleEditing(false);
     } catch (err) {
       let message = "Error saving handle";
       if (err?.response?.data?.message) {
@@ -121,10 +130,23 @@ export default function ProfileCard({ isOpen, onClose, user }) {
       } else if (err?.message) {
         message = err.message;
       }
-      setCfHandleError(message);
+      setHandleError(message);
     } finally {
-      setCfHandleLoading(false);
+      setHandleLoading(false);
     }
+  };
+
+  // Save Codeforces handle
+  const handleSaveCfHandle = async () => {
+    await handleSaveHandle(
+      "cf",
+      cfHandleInput,
+      setCfHandle,
+      setCfHandleSuccess,
+      setCfHandleError,
+      setCfHandleLoading,
+      setCfHandleEditing
+    );
   };
 
   const handleCfHandleEdit = () => {
@@ -184,30 +206,15 @@ export default function ProfileCard({ isOpen, onClose, user }) {
 
   // Save AtCoder handle
   const handleSaveAtcoderHandle = async () => {
-    setAtcoderHandleLoading(true);
-    setAtcoderHandleError("");
-    setAtcoderHandleSuccess("");
-    try {
-      const res = await authRequest({
-        method: "POST",
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/add_atcoder_handle/`,
-        data: { handle: atcoderHandleInput },
-        headers: { "Content-Type": "application/json" },
-      });
-      setAtcoderHandle(atcoderHandleInput);
-      setAtcoderHandleSuccess("Handle saved successfully!");
-      setAtcoderHandleEditing(false);
-    } catch (err) {
-      let message = "Error saving handle";
-      if (err?.response?.data?.message) {
-        message = err.response.data.message;
-      } else if (err?.message) {
-        message = err.message;
-      }
-      setAtcoderHandleError(message);
-    } finally {
-      setAtcoderHandleLoading(false);
-    }
+    await handleSaveHandle(
+      "atcoder",
+      atcoderHandleInput,
+      setAtcoderHandle,
+      setAtcoderHandleSuccess,
+      setAtcoderHandleError,
+      setAtcoderHandleLoading,
+      setAtcoderHandleEditing
+    );
   };
 
   const handleAtcoderHandleEdit = () => {

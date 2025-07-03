@@ -109,7 +109,7 @@ export default function ChangePasswordCard({
     <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-50">
       <div className="dark:bg-[#041B2D] bg-[#177AD6] md:dark:bg-[#041B2D] md:bg-[#177AD6] dark:bg-[linear-gradient(40deg,#000001_0%,#082540_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)] md:dark:bg-none md:bg-none scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-lg md:rounded-lg shadow-lg overflow-y-auto">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-700/50">
+        <div className="flex justify-between items-center px-4 md:px-8 py-5 border-b border-white-400 sticky top-0 z-10">
           <div className="flex items-center gap-3">
             <div className="hidden md:block p-2 bg-blue-900/20 rounded-lg">
               <Key size={20} className="text-blue-400" />

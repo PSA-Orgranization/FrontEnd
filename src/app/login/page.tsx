@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
+import Cookies from "js-cookie";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -29,8 +30,8 @@ export default function Login() {
 
   // Function to clear authentication-related localStorage items
   const clearAuthStorage = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    Cookies.remove("access_token", { path: "/" });
+    Cookies.remove("refresh_token", { path: "/" });
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("first_name");
@@ -53,9 +54,18 @@ export default function Login() {
 
       if (response.status === 200 && result.status === 200) {
         const { access, refresh, user } = result.data;
-        // Save tokens and user info to localStorage
-        localStorage.setItem("access_token", access);
-        localStorage.setItem("refresh_token", refresh);
+        // Save tokens to cookies instead of localStorage
+        Cookies.set("access_token", access, {
+          secure: true,
+          sameSite: "strict",
+          path: "/",
+        });
+        Cookies.set("refresh_token", refresh, {
+          secure: true,
+          sameSite: "strict",
+          path: "/",
+        });
+        // Save user info to localStorage (unchanged for now)
         localStorage.setItem("username", user.username);
         localStorage.setItem("email", user.email);
         localStorage.setItem("first_name", user.first_name);

@@ -24,6 +24,7 @@ import ChatSidebar from "@/components/ChatSidebar";
 import { Chat, ChatMessage } from "@/types/chat";
 import ChatMainArea from "@/components/ChatMainArea";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -46,8 +47,8 @@ export default function ChatPage() {
 
   // Check authentication on component mount
   const checkAuth = () => {
-    const accessToken = localStorage.getItem("access_token");
-    const refreshToken = localStorage.getItem("refresh_token");
+    const accessToken = Cookies.get("access_token");
+    const refreshToken = Cookies.get("refresh_token");
     const username = localStorage.getItem("username");
     const email = localStorage.getItem("email");
 
@@ -82,6 +83,8 @@ export default function ChatPage() {
   }, []);
 
   const logout = useCallback(() => {
+    Cookies.remove("access_token", { path: "/" });
+    Cookies.remove("refresh_token", { path: "/" });
     localStorage.clear();
     window.location.href = "/login";
   }, []);
