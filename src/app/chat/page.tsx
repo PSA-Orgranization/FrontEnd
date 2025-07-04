@@ -411,7 +411,6 @@ export default function ChatPage() {
       <ProfileCard
         isOpen={profileOpen}
         onClose={() => setProfileOpen(false)}
-        onOpen={() => setProfileOpen(true)}
         user={user}
       />
 
