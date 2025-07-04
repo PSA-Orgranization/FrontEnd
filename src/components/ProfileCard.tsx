@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { authRequest } from "../lib/utils";
 import { AiOutlineProfile } from "react-icons/ai";
 import Cookies from "js-cookie";
+import { clearAuthStorage } from "../lib/utils";
 
 export default function ProfileCard({ isOpen, onClose, user }) {
   const [problemsModalOpen, setProblemsModalOpen] = useState(false);
@@ -21,16 +22,6 @@ export default function ProfileCard({ isOpen, onClose, user }) {
     username:
       typeof window !== "undefined" ? localStorage.getItem("username") : "",
     email: typeof window !== "undefined" ? localStorage.getItem("email") : "",
-  };
-
-  // Function to clear authentication-related localStorage items
-  const clearAuthStorage = () => {
-    Cookies.remove("access_token", { path: "/" });
-    Cookies.remove("refresh_token", { path: "/" });
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("first_name");
-    localStorage.removeItem("last_name");
   };
 
   const handleLogout = (e) => {
@@ -64,17 +55,32 @@ export default function ProfileCard({ isOpen, onClose, user }) {
         const atcoder = accounts.find(
           (acc) => acc.account_type.account_type === "atcoder"
         );
+        // Prefer localStorage if present
+        let localCfHandle = null;
+        let localAtcoderHandle = null;
+        if (typeof window !== "undefined") {
+          localCfHandle = localStorage.getItem("cfHandle");
+          localAtcoderHandle = localStorage.getItem("atcoderHandle");
+        }
+        const finalCfHandle = localCfHandle ?? (cf ? cf.handle : "");
+        const finalAtcoderHandle =
+          localAtcoderHandle ?? (atcoder ? atcoder.handle : "");
         setProblemSolvingAccounts({
-          cf: { id: cf ? cf.id : null, handle: cf ? cf.handle : "" },
+          cf: { id: cf ? cf.id : null, handle: finalCfHandle },
           atcoder: {
             id: atcoder ? atcoder.id : null,
-            handle: atcoder ? atcoder.handle : "",
+            handle: finalAtcoderHandle,
           },
         });
-        setCfHandle(cf ? cf.handle : "");
-        setCfHandleInput(cf ? cf.handle : "");
-        setAtcoderHandle(atcoder ? atcoder.handle : "");
-        setAtcoderHandleInput(atcoder ? atcoder.handle : "");
+        setCfHandle(finalCfHandle);
+        setCfHandleInput(finalCfHandle);
+        setAtcoderHandle(finalAtcoderHandle);
+        setAtcoderHandleInput(finalAtcoderHandle);
+        // Save to localStorage to keep in sync
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cfHandle", finalCfHandle);
+          localStorage.setItem("atcoderHandle", finalAtcoderHandle);
+        }
       })
       .catch((err) => {
         let message = "Failed to load accounts";
@@ -113,6 +119,7 @@ export default function ProfileCard({ isOpen, onClose, user }) {
     setHandleLoading(true);
     setHandleError("");
     setHandleSuccess("");
+
     try {
       const res = await authRequest({
         method: "POST",
@@ -120,10 +127,20 @@ export default function ProfileCard({ isOpen, onClose, user }) {
         data: { handle: handleInput, account_type: type },
         headers: { "Content-Type": "application/json" },
       });
+
       setHandle(handleInput);
       setHandleSuccess("Handle saved successfully!");
       setHandleEditing(false);
+      // Save to localStorage
+      if (typeof window !== "undefined") {
+        if (type === "cf") {
+          localStorage.setItem("cfHandle", handleInput);
+        } else if (type === "atcoder") {
+          localStorage.setItem("atcoderHandle", handleInput);
+        }
+      }
     } catch (err) {
+      console.log(err);
       let message = "Error saving handle";
       if (err?.response?.data?.message) {
         message = err.response.data.message;
@@ -185,6 +202,9 @@ export default function ProfileCard({ isOpen, onClose, user }) {
       }));
       setCfHandle("");
       setCfHandleInput("");
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("cfHandle");
+      }
     } catch (err) {
       setCfHandleError("Failed to delete handle");
     } finally {
@@ -253,6 +273,9 @@ export default function ProfileCard({ isOpen, onClose, user }) {
       }));
       setAtcoderHandle("");
       setAtcoderHandleInput("");
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("atcoderHandle");
+      }
     } catch (err) {
       setAtcoderHandleError("Failed to delete handle");
     } finally {
@@ -370,14 +393,6 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                           {!cfHandleEditing && cfHandle && (
                             <>
                               <button
-                                onClick={handleCfHandleEdit}
-                                className="p-1 rounded text-blue-500 hover:text-blue-400 cursor-pointer"
-                                title="Edit handle"
-                                disabled={cfHandleDeleting}
-                              >
-                                <Edit size={16} />
-                              </button>
-                              <button
                                 onClick={handleDeleteCfHandle}
                                 className="p-1 rounded text-red-500 hover:text-red-400 cursor-pointer"
                                 title="Delete handle"
@@ -448,6 +463,20 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                       ▶
                     </span>
                   </div>
+
+                  <div
+                    className="flex text-sm items-center text-white cursor-pointer my-2 transition-all duration-200 
+                 hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0
+                 border border-transparent hover:border-blue-500/30"
+                    onClick={() => setTagModalOpen(true)}
+                  >
+                    <span className="text-gray-200 group-hover:text-white">
+                      Problems solved for each Tag{" "}
+                    </span>
+                    <span className="ml-auto text-blue-400 group-hover:text-white">
+                      ▶
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -507,14 +536,6 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                           {!atcoderHandleEditing && atcoderHandle && (
                             <>
                               <button
-                                onClick={handleAtcoderHandleEdit}
-                                className="p-1 rounded text-blue-500 hover:text-blue-400 cursor-pointer"
-                                title="Edit handle"
-                                disabled={atcoderHandleDeleting}
-                              >
-                                <Edit size={16} />
-                              </button>
-                              <button
                                 onClick={handleDeleteAtcoderHandle}
                                 className="p-1 rounded text-red-500 hover:text-red-400 cursor-pointer"
                                 title="Delete handle"
@@ -559,7 +580,7 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                     <div className="text-blue-400 text-xs mb-1">Saving...</div>
                   )}
 
-                  <div
+                  {/* <div
                     className="flex text-sm items-center text-white cursor-pointer my-2 transition-all duration-200 
                  hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0
                  border border-transparent hover:border-blue-500/30"
@@ -571,7 +592,7 @@ export default function ProfileCard({ isOpen, onClose, user }) {
                     <span className="ml-auto text-blue-400 group-hover:text-white">
                       ▶
                     </span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

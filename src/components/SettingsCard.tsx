@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ChangePasswordCard from "./ChangePasswordCard";
 import Cookies from "js-cookie";
+import { clearAuthStorage } from "../lib/utils";
 
 interface SettingsCardProps {
   isOpen: boolean;
@@ -24,16 +25,6 @@ export default function SettingsCard({
 
   const handleChangePassword = () => {
     setChangePasswordOpen(true);
-  };
-
-  // Function to clear authentication-related localStorage items
-  const clearAuthStorage = () => {
-    Cookies.remove("access_token", { path: "/" });
-    Cookies.remove("refresh_token", { path: "/" });
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("first_name");
-    localStorage.removeItem("last_name");
   };
 
   const handleLogout = (e) => {

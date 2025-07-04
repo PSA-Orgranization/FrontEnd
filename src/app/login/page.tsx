@@ -10,6 +10,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import Cookies from "js-cookie";
+import { clearAuthStorage } from "@/lib/utils";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -26,16 +27,6 @@ export default function Login() {
       ...prev,
       [name]: value,
     }));
-  };
-
-  // Function to clear authentication-related localStorage items
-  const clearAuthStorage = () => {
-    Cookies.remove("access_token", { path: "/" });
-    Cookies.remove("refresh_token", { path: "/" });
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("first_name");
-    localStorage.removeItem("last_name");
   };
 
   const handleSubmit = async (e) => {

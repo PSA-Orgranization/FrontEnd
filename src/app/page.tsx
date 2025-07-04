@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import Cookies from "js-cookie";
+import { clearAuthStorage } from "@/lib/utils";
 
 const anta = Anta({
   weight: "400",
@@ -20,16 +21,6 @@ const anuphan = Anuphan({
 
 export default function Home() {
   const router = useRouter();
-
-  // Function to clear authentication-related localStorage items
-  const clearAuthStorage = () => {
-    Cookies.remove("access_token", { path: "/" });
-    Cookies.remove("refresh_token", { path: "/" });
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("first_name");
-    localStorage.removeItem("last_name");
-  };
 
   useEffect(() => {
     const checkAuth = async () => {

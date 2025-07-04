@@ -63,3 +63,11 @@ export async function authRequest<T = any>(
     throw error;
   }
 }
+
+export function clearAuthStorage() {
+  if (typeof window !== "undefined") {
+    Cookies.remove("access_token", { path: "/" });
+    Cookies.remove("refresh_token", { path: "/" });
+    localStorage.clear();
+  }
+}
