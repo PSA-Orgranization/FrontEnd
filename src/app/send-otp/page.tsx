@@ -191,24 +191,16 @@ export default function OTPVerification() {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center p-4">
-      <div className="flex justify-center mb-12">
-        <Image
-          src="/PSA-Light-Logo.svg"
-          alt="PSA Logo Light"
-          width={208}
-          height={208}
-          priority
-          className="block dark:hidden"
-        />
-        {/* Dark mode logo */}
-        <Image
-          src="/PSA-Dark-Logo.svg"
-          alt="PSA Logo Dark"
-          width={208}
-          height={208}
-          priority
-          className="hidden dark:block"
-        />
+      <div className="flex justify-center mb-12 rounded-full p-8 py-10 dark:bg-[linear-gradient(40deg,#05203d_0%,#004e99_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)]">
+        <div className="">
+          <Image
+            src="/Logo.svg"
+            alt="PSA Logo Light"
+            width={196}
+            height={196}
+            priority
+          />
+        </div>
       </div>
       <div className="w-full max-w-sm rounded-4xl shadow-md p-8 bg-[#1773C8] dark:bg-[#082540]">
         <h1 className="text-2xl font-bold text-center text-white mb-6">OTP</h1>

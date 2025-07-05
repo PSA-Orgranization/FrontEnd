@@ -22,23 +22,9 @@ const EmptyChatScreen: React.FC<EmptyChatScreenProps> = ({ handleNewChat }) => {
 
   return (
     <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
-      <Image
-        src="/PSA-Light-Logo.svg"
-        alt="PSA Logo Light"
-        width={80}
-        height={80}
-        priority
-        className="block dark:hidden"
-      />
-      {/* Dark mode logo */}
-      <Image
-        src="/PSA-Dark-Logo.svg"
-        alt="PSA Logo Dark"
-        width={80}
-        height={80}
-        priority
-        className="hidden dark:block"
-      />
+      <div className="rounded-full p-3 dark:bg-[linear-gradient(40deg,#05203d_0%,#004e99_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)]">
+        <Image src="/Logo.svg" alt="PSA Logo" width={60} height={60} className="py-1" priority />
+      </div>
       <h2 className="text-2xl font-bold text-white">
         How can I help you today?
       </h2>

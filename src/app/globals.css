@@ -4,6 +4,16 @@
 /* @custom-variant dark (&:is(.dark *)); */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* Custom gradient backgrounds for logo */
+.bg-gradient-light {
+  background: linear-gradient(40deg, #bab8b8 0%, #0c5ba4 75%, #ee4392 100%);
+}
+.bg-gradient-dark {
+  background: linear-gradient(135deg, #05203d 0%, #004e99 50%, #ee4392 100%);
+}
+
+/* dark:bg-[linear-gradient(40deg,#000001_0%,#082540_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)] */
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

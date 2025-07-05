@@ -95,24 +95,15 @@ export default function Home() {
     <div className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden sm:bg-[url('/Background.svg')] bg-center">
       <div className="z-10 flex flex-col items-center pb-10">
         <div className="w-64 h-64 rounded-full flex items-center justify-center mb-8">
-          {/* Light mode logo */}
-          <Image
-            src="/PSA-Light-Logo.svg"
-            alt="PSA Logo Light"
-            width={208}
-            height={208}
-            priority
-            className="block dark:hidden"
-          />
-          {/* Dark mode logo */}
-          <Image
-            src="/PSA-Dark-Logo.svg"
-            alt="PSA Logo Dark"
-            width={208}
-            height={208}
-            priority
-            className="hidden dark:block"
-          />
+          <div className="rounded-full p-8 py-10 dark:bg-[linear-gradient(40deg,#05203d_0%,#004e99_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)]">
+            <Image
+              src="/Logo.svg"
+              alt="PSA Logo"
+              width={208}
+              height={208}
+              priority
+            />
+          </div>
         </div>
         <h1
           className={`text-9xl tracking-wider text-blue-200 mb-2 hidden sm:block ${anta.className}`}

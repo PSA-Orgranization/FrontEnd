@@ -447,23 +447,14 @@ export default function ChatPage() {
         <div className="flex justify-between items-center h-16 px-4">
           {/* Logo + Toggle Button */}
           <button onClick={toggleSidebar} className="cursor-pointer">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center">
+            <div className="rounded-full p-3 mt-10 dark:bg-[linear-gradient(40deg,#05203d_0%,#004e99_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)]">
               <Image
-                src="/PSA-Light-Logo.svg"
-                alt="PSA Logo Light"
-                width={48}
-                height={48}
+                src="/Logo.svg"
+                alt="PSA Logo"
+                width={30}
+                height={30}
                 priority
-                className="block dark:hidden"
-              />
-              {/* Dark mode logo */}
-              <Image
-                src="/PSA-Dark-Logo.svg"
-                alt="PSA Logo Dark"
-                width={48}
-                height={48}
-                priority
-                className="hidden dark:block"
+                className=""
               />
             </div>
           </button>

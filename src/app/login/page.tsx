@@ -79,25 +79,16 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
-      <div className="flex justify-center mb-12 pt-10">
-        {/* Light mode logo */}
-        <Image
-          src="/PSA-Light-Logo.svg"
-          alt="PSA Logo Light"
-          width={208}
-          height={208}
-          priority
-          className="block dark:hidden"
-        />
-        {/* Dark mode logo */}
-        <Image
-          src="/PSA-Dark-Logo.svg"
-          alt="PSA Logo Dark"
-          width={208}
-          height={208}
-          priority
-          className="hidden dark:block"
-        />
+      <div className="flex justify-center p-8 py-10 mb-12 rounded-full  dark:bg-[linear-gradient(40deg,#05203d_0%,#004e99_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)]">
+        <div className="">
+          <Image
+            src="/Logo.svg"
+            alt="PSA Logo Light"
+            width={196}
+            height={196}
+            priority
+          />
+        </div>
       </div>
       <div className="w-4/5 sm:w-full max-w-md py-7 px-4 sm:p-7 rounded-3xl text-white shadow-xl bg-[#1773C8] dark:bg-[#082540]">
         <form onSubmit={handleSubmit} className="space-y-4">

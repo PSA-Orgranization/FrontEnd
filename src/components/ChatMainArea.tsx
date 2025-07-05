@@ -293,7 +293,7 @@ const ChatMainArea: React.FC<ChatMainAreaProps> = ({
 
           <form
             onSubmit={handleSubmit}
-            className={`flex w-full ${!sidebarOpen ? "max-w-7xl" : ""}`}
+            className={`flex w-full  ${!sidebarOpen ? "max-w-7xl" : ""}`}
           >
             <input
               ref={inputRef}
