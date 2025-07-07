@@ -10,8 +10,9 @@ import { authRequest } from "../lib/utils";
 import { AiOutlineProfile } from "react-icons/ai";
 import Cookies from "js-cookie";
 import { clearAuthStorage } from "../lib/utils";
+import type { ProfileCardProps } from "@/types/chat";
 
-export default function ProfileCard({ isOpen, onClose, user }) {
+export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
   const [problemsModalOpen, setProblemsModalOpen] = useState(false);
   const [levelModalOpen, setLevelModalOpen] = useState(false);
   const [tagModalOpen, setTagModalOpen] = useState(false);

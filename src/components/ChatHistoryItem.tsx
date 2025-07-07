@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import { Trash, Edit, Check, X } from "lucide-react";
+import { ChatHistoryItemProps } from "@/types/chat";
 
-interface ChatHistoryItemProps {
-  text: string;
-  date?: Date | null;
-  chatId?: string | number;
-  onDelete?: () => void;
-  onUpdateTitle?: (newTitle: string) => void;
-  className?: string;
-}
+
 
 const ChatHistoryItem: React.FC<ChatHistoryItemProps> = ({
   text,

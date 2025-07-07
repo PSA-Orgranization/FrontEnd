@@ -1,24 +1,11 @@
 import React, { RefObject, useState, useEffect } from "react";
-import { ChatMessage } from "@/types/chat";
+import { ChatMainAreaProps, ChatMessage } from "@/types/chat";
 import EmptyChatScreen from "./EmptyChatScreen";
 import DotLoader from "./DotLoader";
 import { SendHorizontal, Copy, Check, ChevronDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { FaArrowDown } from "react-icons/fa";
-
-interface ChatMainAreaProps {
-  chatMessages: ChatMessage[];
-  loadingMessages: boolean;
-  selectedChatId: number | null;
-  message: string;
-  setMessage: (msg: string) => void;
-  handleSubmit: (e: React.FormEvent | string) => void;
-  handleNewChat: (msg: string) => void;
-  inputRef: RefObject<HTMLInputElement>;
-  sidebarOpen: boolean;
-  messagesEndRef: RefObject<HTMLDivElement>;
-}
 
 const ChatMainArea: React.FC<ChatMainAreaProps> = ({
   chatMessages,

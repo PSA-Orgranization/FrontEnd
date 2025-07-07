@@ -8,12 +8,7 @@ import { useState } from "react";
 import ChangePasswordCard from "./ChangePasswordCard";
 import Cookies from "js-cookie";
 import { clearAuthStorage } from "../lib/utils";
-
-interface SettingsCardProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onDeleteAll?: () => void;
-}
+import { SettingsCardProps } from "@/types/chat";
 
 export default function SettingsCard({
   isOpen,

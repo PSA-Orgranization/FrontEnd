@@ -3,21 +3,7 @@ import Link from "next/link";
 import Button from "./Button";
 import ChatHistoryItem from "./ChatHistoryItem";
 import { ChevronLeft } from "lucide-react";
-import { Chat } from "@/types/chat";
-
-interface ChatSidebarProps {
-  todayChats: Chat[];
-  yesterdayChats: Chat[];
-  previous30DaysChats: Chat[];
-  selectedChatId: number | null;
-  onSelectChat: (id: number) => void;
-  onNewChat: () => void;
-  onDeleteChat: (id: number) => void;
-  onUpdateChatTitle: (chatId: number, newTitle: string) => void;
-  sidebarOpen: boolean;
-  isMobile: boolean;
-  toggleSidebar: () => void;
-}
+import { Chat, ChatSidebarProps } from "@/types/chat";
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
   todayChats,

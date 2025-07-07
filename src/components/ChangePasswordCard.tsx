@@ -5,11 +5,7 @@ import { X, Key, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { authRequest } from "@/lib/utils";
 import { toast } from "react-toastify";
-
-interface ChangePasswordCardProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { ChangePasswordCardProps } from "@/types/chat";
 
 export default function ChangePasswordCard({
   isOpen,

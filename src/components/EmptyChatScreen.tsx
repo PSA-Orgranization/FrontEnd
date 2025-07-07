@@ -1,10 +1,7 @@
 import Image from "next/image";
 import React, { useState, useRef } from "react";
 import { SendHorizontal } from "lucide-react";
-
-interface EmptyChatScreenProps {
-  handleNewChat: (msg: string) => void;
-}
+import { EmptyChatScreenProps } from "@/types/chat";
 
 const EmptyChatScreen: React.FC<EmptyChatScreenProps> = ({ handleNewChat }) => {
   const [message, setMessage] = useState("");
@@ -23,7 +20,14 @@ const EmptyChatScreen: React.FC<EmptyChatScreenProps> = ({ handleNewChat }) => {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
       <div className="rounded-full p-3 dark:bg-[linear-gradient(40deg,#05203d_0%,#004e99_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)]">
-        <Image src="/Logo.svg" alt="PSA Logo" width={60} height={60} className="py-1" priority />
+        <Image
+          src="/Logo.svg"
+          alt="PSA Logo"
+          width={60}
+          height={60}
+          className="py-1"
+          priority
+        />
       </div>
       <h2 className="text-2xl font-bold text-white">
         How can I help you today?
