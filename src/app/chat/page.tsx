@@ -411,7 +411,7 @@ export default function ChatPage() {
       <ProfileCard
         isOpen={profileOpen}
         onClose={() => setProfileOpen(false)}
-        user={user}
+        // user={user}
       />
 
       {/* SettingsCard component */}
