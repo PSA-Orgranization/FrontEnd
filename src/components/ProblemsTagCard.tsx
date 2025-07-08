@@ -38,7 +38,9 @@ export default function ProblemsTagCard({
           throw new Error(json.message || "Invalid response");
         setTagData(json.data.types);
       } catch (err: any) {
-        setError(err.message || "Unknown error");
+        setError(
+          "Verify your Codeforces handle or check your internet connection."
+        );
       } finally {
         setLoading(false);
       }

@@ -11,6 +11,7 @@ import { AiOutlineProfile } from "react-icons/ai";
 import Cookies from "js-cookie";
 import { clearAuthStorage } from "../lib/utils";
 import type { ProfileCardProps } from "@/types/chat";
+import { MdVerified } from "react-icons/md";
 
 export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
   const [problemsModalOpen, setProblemsModalOpen] = useState(false);
@@ -33,8 +34,8 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
 
   // Handles state for problem solving accounts
   const [problemSolvingAccounts, setProblemSolvingAccounts] = useState({
-    cf: { id: null, handle: "" },
-    atcoder: { id: null, handle: "" },
+    cf: { id: null, handle: "", status: "Unverified" },
+    atcoder: { id: null, handle: "", status: "Unverified" },
   });
   const [accountsLoading, setAccountsLoading] = useState(false);
   const [accountsError, setAccountsError] = useState("");
@@ -67,16 +68,22 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
         const finalAtcoderHandle =
           localAtcoderHandle ?? (atcoder ? atcoder.handle : "");
         setProblemSolvingAccounts({
-          cf: { id: cf ? cf.id : null, handle: finalCfHandle },
+          cf: {
+            id: cf ? cf.id : null,
+            handle: finalCfHandle,
+            status: cf ? cf.status || "Unverified" : "Unverified",
+          },
           atcoder: {
             id: atcoder ? atcoder.id : null,
             handle: finalAtcoderHandle,
+            status: atcoder ? atcoder.status || "Unverified" : "Unverified",
           },
         });
         setCfHandle(finalCfHandle);
         setCfHandleInput(finalCfHandle);
         setAtcoderHandle(finalAtcoderHandle);
         setAtcoderHandleInput(finalAtcoderHandle);
+        setCfHandleVerified(cf ? cf.status === "Approved" : false);
         // Save to localStorage to keep in sync
         if (typeof window !== "undefined") {
           localStorage.setItem("cfHandle", finalCfHandle);
@@ -103,6 +110,16 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
   const [cfHandleSuccess, setCfHandleSuccess] = useState("");
   const [cfHandleEditing, setCfHandleEditing] = useState(false);
   const [cfHandleDeleting, setCfHandleDeleting] = useState(false);
+  const [cfHandleVerified, setCfHandleVerified] = useState(false);
+
+  // Verification state for Codeforces handle
+  const [cfVerifyModalOpen, setCfVerifyModalOpen] = useState(false);
+  const [cfVerifyLoading, setCfVerifyLoading] = useState(false);
+  const [cfVerifyError, setCfVerifyError] = useState("");
+  const [cfVerifyProblemLink, setCfVerifyProblemLink] = useState("");
+  const [cfVerifyStep, setCfVerifyStep] = useState("instructions"); // 'instructions' | 'waiting' | 'done'
+  const [cfVerifySuccess, setCfVerifySuccess] = useState("");
+  const [cfVerifyingHandleId, setCfVerifyingHandleId] = useState(null);
 
   // Add refs for input focus
   const cfHandleInputRef = useRef(null);
@@ -129,9 +146,24 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
         headers: { "Content-Type": "application/json" },
       });
 
+      const accountId = res.data.data.account.id;
       setHandle(handleInput);
       setHandleSuccess("Handle saved successfully!");
       setHandleEditing(false);
+
+      // Update problemSolvingAccounts with new id and handle
+      setProblemSolvingAccounts((prev) => ({
+        ...prev,
+        [type]: {
+          id: accountId,
+          handle: handleInput,
+          status:
+            type === "cf"
+              ? prev.cf?.status || "Unverified"
+              : prev.atcoder?.status || "Unverified",
+        },
+      }));
+
       // Save to localStorage
       if (typeof window !== "undefined") {
         if (type === "cf") {
@@ -199,10 +231,12 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
       });
       setProblemSolvingAccounts((prev) => ({
         ...prev,
-        cf: { id: null, handle: "" },
+        cf: { id: null, handle: "", status: "Unverified" },
+        atcoder: { ...prev.atcoder },
       }));
       setCfHandle("");
       setCfHandleInput("");
+      setCfHandleVerified(false); // Reset verified status on deletion
       if (typeof window !== "undefined") {
         localStorage.removeItem("cfHandle");
       }
@@ -270,7 +304,8 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
       });
       setProblemSolvingAccounts((prev) => ({
         ...prev,
-        atcoder: { id: null, handle: "" },
+        atcoder: { id: null, handle: "", status: "Unverified" },
+        cf: { ...prev.cf },
       }));
       setAtcoderHandle("");
       setAtcoderHandleInput("");
@@ -281,6 +316,58 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
       setAtcoderHandleError("Failed to delete handle");
     } finally {
       setAtcoderHandleDeleting(false);
+    }
+  };
+
+  // Codeforces handle verification logic
+  const handleStartCfVerification = async () => {
+    setCfVerifyLoading(true);
+    setCfVerifyError("");
+    setCfVerifySuccess("");
+    setCfVerifyStep("instructions");
+    setCfVerifyProblemLink("");
+    const handleId = problemSolvingAccounts.cf.id;
+    setCfVerifyingHandleId(handleId);
+    try {
+      const res = await authRequest({
+        method: "GET",
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/verify_handle/${handleId}/`,
+      });
+      const problemLink = res.data.data.problem.problem_link;
+      setCfVerifyProblemLink(problemLink);
+      setCfVerifyModalOpen(true);
+    } catch (err) {
+      setCfVerifyError("Failed to start verification. Try again later.");
+    } finally {
+      setCfVerifyLoading(false);
+    }
+  };
+
+  const handleSubmitCfVerification = async () => {
+    setCfVerifyLoading(true);
+    setCfVerifyError("");
+    setCfVerifySuccess("");
+    try {
+      const res = await authRequest({
+        method: "POST",
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/verify_handle/${cfVerifyingHandleId}/`,
+      });
+      // console.log("Verification response:", res);
+      setCfVerifyStep("done");
+      setCfVerifySuccess("Your Codeforces account has been verified!");
+      setCfHandleVerified(true);
+      setProblemSolvingAccounts((prev) => ({
+        ...prev,
+        cf: {
+          ...prev.cf,
+          status: "Verified",
+        },
+      }));
+      // Optionally update state to reflect verified status
+    } catch (err) {
+      setCfVerifyError("Verification failed. Please try again.");
+    } finally {
+      setCfVerifyLoading(false);
     }
   };
 
@@ -401,6 +488,26 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
                               >
                                 <Trash size={16} />
                               </button>
+                              {cfHandleVerified ? (
+                                <span
+                                  className="p-1 dark:text-blue-500"
+                                  title="Verified"
+                                >
+                                  <MdVerified size={18} />
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={handleStartCfVerification}
+                                  className="p-1 rounded text-yellow-400 hover:text-yellow-300 border border-yellow-400 hover:border-yellow-300 transition disabled:opacity-50 cursor-pointer"
+                                  disabled={
+                                    cfVerifyLoading ||
+                                    !problemSolvingAccounts.cf.id
+                                  }
+                                  title="Verify Codeforces handle"
+                                >
+                                  Verify
+                                </button>
+                              )}
                             </>
                           )}
                           {!cfHandleEditing && !cfHandle && (
@@ -418,16 +525,6 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
                     </div>
                   </div>
 
-                  {/* {cfHandle && !cfHandleEditing && (
-                    <div className="text-xs text-gray-400 mb-1">
-                      Current: <span className="text-blue-400">{cfHandle}</span>
-                    </div>
-                  )}
-                  {cfHandleSuccess && (
-                    <div className="text-green-400 text-xs mb-1">
-                      {cfHandleSuccess}
-                    </div>
-                  )} */}
                   {cfHandleError && (
                     <div className="text-red-400 text-xs mb-1">
                       {cfHandleError}
@@ -483,10 +580,6 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
 
               <div>
                 <div className="mb-4 md:mb-2 relative">
-                  {/* <div className="flex items-center justify-between border-b border-gray-700 pb-1">
-                    <span className="text-gray-400">AtCoder handle</span>
-                  </div> */}
-
                   {/* AtCoder Handle Input */}
                   <div className="flex items-center gap-2 mb-2">
                     <input
@@ -561,17 +654,6 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
                     </div>
                   </div>
 
-                  {/* {atcoderHandle && !atcoderHandleEditing && (
-                    <div className="text-xs text-gray-400 mb-1">
-                      Current:{" "}
-                      <span className="text-blue-400">{atcoderHandle}</span>
-                    </div>
-                  )}
-                  {atcoderHandleSuccess && (
-                    <div className="text-green-400 text-xs mb-1">
-                      {atcoderHandleSuccess}
-                    </div>
-                  )} */}
                   {atcoderHandleError && (
                     <div className="text-red-400 text-xs mb-1">
                       {atcoderHandleError}
@@ -580,26 +662,90 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
                   {atcoderHandleLoading && (
                     <div className="text-blue-400 text-xs mb-1">Saving...</div>
                   )}
-
-                  {/* <div
-                    className="flex text-sm items-center text-white cursor-pointer my-2 transition-all duration-200 
-                 hover:bg-blue-800/50 hover:shadow-md rounded-lg py-2 px-4 mx-0
-                 border border-transparent hover:border-blue-500/30"
-                    onClick={() => setTagModalOpen(true)}
-                  >
-                    <span className="text-gray-200 group-hover:text-white">
-                      Problems solved for each Tag{" "}
-                    </span>
-                    <span className="ml-auto text-blue-400 group-hover:text-white">
-                      ▶
-                    </span>
-                  </div> */}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Codeforces Verification Modal */}
+      {cfVerifyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#041B2D] rounded-lg shadow-lg p-6 w-full max-w-md border border-blue-400">
+            <h3 className="text-lg font-semibold mb-2 text-blue-700 dark:text-blue-300">
+              Verify Codeforces Handle
+            </h3>
+            {cfVerifyError && (
+              <div className="text-red-500 mb-2">{cfVerifyError}</div>
+            )}
+            {cfVerifyStep === "instructions" && cfVerifyProblemLink && (
+              <>
+                <p className="mb-3 text-gray-800 dark:text-gray-200">
+                  To verify your Codeforces account, please:
+                </p>
+                <ol className="list-decimal list-inside mb-3 text-gray-700 dark:text-gray-300">
+                  <li>
+                    Go to this problem and submit a{" "}
+                    <span className="font-semibold">compilation error</span>:
+                  </li>
+                </ol>
+                <a
+                  href={cfVerifyProblemLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mb-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                  Go to Problem
+                </a>
+                <div className="mb-2 text-gray-600 dark:text-gray-400 text-sm">
+                  After submitting a compilation error, return here and click
+                  the button below.
+                </div>
+                <button
+                  onClick={() => setCfVerifyStep("waiting")}
+                  className="w-full px-4 py-2 bg-green-600 cursor-pointer text-white rounded hover:bg-green-700 transition mb-2"
+                >
+                  I submitted a compilation error
+                </button>
+              </>
+            )}
+            {cfVerifyStep === "waiting" && (
+              <>
+                <div className="mb-3 text-gray-800 dark:text-gray-200">
+                  Click the button below to complete verification.
+                </div>
+                <button
+                  onClick={handleSubmitCfVerification}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition mb-2 cursor-pointer"
+                  disabled={cfVerifyLoading}
+                >
+                  {cfVerifyLoading ? "Verifying..." : "Complete Verification"}
+                </button>
+                <button
+                  onClick={() => setCfVerifyStep("instructions")}
+                  className="w-full px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition cursor-pointer"
+                >
+                  Back
+                </button>
+              </>
+            )}
+            {cfVerifyStep === "done" && (
+              <>
+                <div className="mb-3 text-green-600 dark:text-green-400 font-semibold">
+                  {cfVerifySuccess}
+                </div>
+                <button
+                  onClick={() => setCfVerifyModalOpen(false)}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
+                >
+                  Close
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }
