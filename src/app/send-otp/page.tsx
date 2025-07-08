@@ -149,7 +149,6 @@ export default function OTPVerification() {
             { headers: { "Content-Type": "application/json" } }
           );
           if (verifyRes.status === 200) {
-            console.log("Reset password verify response:", verifyRes.data);
             if (
               verifyRes.data &&
               verifyRes.data.data &&

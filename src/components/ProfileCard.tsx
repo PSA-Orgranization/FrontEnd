@@ -431,10 +431,6 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-16">
               <div>
                 <div className="mb-4 md:mb-4 relative">
-                  {/* <div className="flex items-center justify-between border-b border-gray-700 mb-4 pb-1">
-                    <span className="text-gray-400">Code forces handle</span>
-                  </div> */}
-
                   {/* Codeforces Handle Input */}
                   <div className="flex items-center gap-2 mb-2">
                     <input
@@ -498,7 +494,7 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
                               ) : (
                                 <button
                                   onClick={handleStartCfVerification}
-                                  className="p-1 rounded text-yellow-400 hover:text-yellow-300 border border-yellow-400 hover:border-yellow-300 transition disabled:opacity-50 cursor-pointer"
+                                  className="py-1 px-2 rounded-full dark:text-blue-400 dark:border-blue-400 text-white border border-white hover:scale-105 transition text-sm cursor-pointer"
                                   disabled={
                                     cfVerifyLoading ||
                                     !problemSolvingAccounts.cf.id
