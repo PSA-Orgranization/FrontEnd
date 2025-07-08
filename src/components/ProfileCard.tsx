@@ -389,7 +389,7 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
       />
 
       <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-40 ">
-        <div className="dark:bg-[#041B2D] bg-[#177AD6] md:dark:bg-[#041B2D] md:bg-[#177AD6] dark:bg-[linear-gradient(40deg,#000001_0%,#082540_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)] md:dark:bg-none md:bg-none scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:rounded-lg shadow-lg overflow-y-auto">
+        <div className="dark:bg-[#041B2D] bg-[#177AD6] md:dark:bg-[#041B2D] md:bg-[#177AD6] dark:bg-[linear-gradient(40deg,#000001_0%,#082540_75%,#ee4392_100%)] bg-[linear-gradient(40deg,#BAB8B8_0%,#0C5BA4_75%,#EE4392_100%)] md:dark:bg-none md:bg-none scrollbar-thin [-ms-overflow-style:'none'] [scrollbar-width:'none'] [&::-webkit-scrollbar]:hidden w-full h-full md:h-auto md:max-h-[90vh] md:max-w-lg md:rounded-lg shadow-lg overflow-y-auto">
           {/* Header */}
           <div className="flex justify-between items-center px-4 md:px-8 py-5 border-b border-white-400 sticky top-0 z-10">
             <div className="flex items-center gap-3">
@@ -428,7 +428,7 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
             </div>
 
             {/* Handles */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-16">
+            <div className="grid grid-cols-1 gap-4 md:gap-16">
               <div>
                 <div className="mb-4 md:mb-4 relative">
                   {/* Codeforces Handle Input */}
@@ -571,93 +571,6 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
                       ▶
                     </span>
                   </div>
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-4 md:mb-2 relative">
-                  {/* AtCoder Handle Input */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <input
-                      type="text"
-                      className={`dark:bg-gray-800 bg-[#1773C8] text-white rounded px-2 py-1 flex-1 outline-none border transition ${
-                        atcoderHandleEditing
-                          ? "border-gray-700 focus:border-blue-500"
-                          : "border-blue-500 focus:border-blue-400"
-                      } ${
-                        !atcoderHandleEditing && atcoderHandle
-                          ? "cursor-default"
-                          : ""
-                      }`}
-                      placeholder="Enter AtCoder handle"
-                      value={atcoderHandleInput}
-                      onChange={(e) => setAtcoderHandleInput(e.target.value)}
-                      disabled={atcoderHandleLoading || !atcoderHandleEditing}
-                      readOnly={!atcoderHandleEditing}
-                      style={{ minWidth: 0 }}
-                      ref={atcoderHandleInputRef}
-                    />
-
-                    {/* Action Icons */}
-                    <div className="flex items-center gap-1">
-                      {atcoderHandleEditing ? (
-                        <>
-                          <button
-                            onClick={handleSaveAtcoderHandle}
-                            disabled={
-                              atcoderHandleLoading || !atcoderHandleInput.trim()
-                            }
-                            className="p-1 rounded text-green-500 hover:text-green-400 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Save handle"
-                          >
-                            <Check size={16} />
-                          </button>
-                          <button
-                            onClick={handleAtcoderHandleCancel}
-                            disabled={atcoderHandleLoading}
-                            className="p-1 rounded text-red-500 hover:text-red-400 cursor-pointer disabled:opacity-50"
-                            title="Cancel edit"
-                          >
-                            <X size={16} />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          {!atcoderHandleEditing && atcoderHandle && (
-                            <>
-                              <button
-                                onClick={handleDeleteAtcoderHandle}
-                                className="p-1 rounded text-red-500 hover:text-red-400 cursor-pointer"
-                                title="Delete handle"
-                                disabled={atcoderHandleDeleting}
-                              >
-                                <Trash size={16} />
-                              </button>
-                            </>
-                          )}
-                          {!atcoderHandleEditing && !atcoderHandle && (
-                            <button
-                              onClick={handleAtcoderHandleEdit}
-                              className="p-1 rounded text-green-500 hover:text-green-400 cursor-pointer"
-                              title="Add handle"
-                              disabled={atcoderHandleDeleting}
-                            >
-                              <Plus size={16} />
-                            </button>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {atcoderHandleError && (
-                    <div className="text-red-400 text-xs mb-1">
-                      {atcoderHandleError}
-                    </div>
-                  )}
-                  {atcoderHandleLoading && (
-                    <div className="text-blue-400 text-xs mb-1">Saving...</div>
-                  )}
                 </div>
               </div>
             </div>
