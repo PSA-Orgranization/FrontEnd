@@ -132,8 +132,8 @@ export default function Home() {
                     <ButtonWithImage className="" imageSrc={"/google-icon.svg"} onClick={GoogleLogin}
                 style={{borderRadius: 18, boxShadow: 'rgba(0,0,0,0.25)', fontWeight: 'bold'}}></ButtonWithImage>
 
-                    <ButtonWithImage className="" imageSrc={"/github-icon.svg"}
-                style={{borderRadius: 18, boxShadow: 'rgba(0,0,0,0.25)', fontWeight: 'bold'}}></ButtonWithImage>
+                {/*    <ButtonWithImage className="" imageSrc={"/github-icon.svg"}*/}
+                {/*style={{borderRadius: 18, boxShadow: 'rgba(0,0,0,0.25)', fontWeight: 'bold'}}></ButtonWithImage>*/}
           </div>
         </div>
       </div>
