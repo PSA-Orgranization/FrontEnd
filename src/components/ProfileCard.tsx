@@ -173,7 +173,6 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
         }
       }
     } catch (err) {
-      console.log(err);
       let message = "Error saving handle";
       if (err?.response?.data?.message) {
         message = err.response.data.message;
@@ -352,7 +351,6 @@ export default function ProfileCard({ isOpen, onClose }: ProfileCardProps) {
         method: "POST",
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/verify_handle/${cfVerifyingHandleId}/`,
       });
-      // console.log("Verification response:", res);
       setCfVerifyStep("done");
       setCfVerifySuccess("Your Codeforces account has been verified!");
       setCfHandleVerified(true);
