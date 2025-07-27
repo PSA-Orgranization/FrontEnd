@@ -12,6 +12,7 @@ import { Eye, EyeOff } from "lucide-react";
 import Cookies from "js-cookie";
 import { clearAuthStorage } from "@/lib/utils";
 
+
 export default function Login() {
   const [formData, setFormData] = useState({
     email: "",
@@ -84,8 +85,8 @@ export default function Login() {
           <Image
             src="/Logo.svg"
             alt="PSA Logo Light"
-            width={196}
-            height={196}
+            width={180}
+            height={180}
             priority
           />
         </div>
@@ -146,7 +147,7 @@ export default function Login() {
           <div className="text-center mt-6">
             <Button
               backGround="bg-blue-500"
-              className="px-8 py-3 sm:px-8 sm:py-4 rounded-4xl text-xl sm:text-2xl"
+              className="px-8 py-3 sm:px-8 sm:py-3 rounded-4xl text-xl sm:text-2xl"
               style={{ backgroundColor: "#438BD3" }}
               type="submit"
               disabled={loading}

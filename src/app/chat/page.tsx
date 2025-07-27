@@ -107,6 +107,7 @@ export default function ChatPage() {
         : res.data.data || res.data;
 
       setChats(chatsData);
+
       // Categorize chats immediately after getting the data
       const today: Chat[] = [];
       const yesterday: Chat[] = [];

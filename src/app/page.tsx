@@ -2,12 +2,14 @@
 import Link from "next/link";
 import { Anta, Anuphan } from "next/font/google";
 import Button from "@/components/Button";
+import ButtonWithImage from "@/components/ButtonWithImage";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import Cookies from "js-cookie";
 import { clearAuthStorage } from "@/lib/utils";
+import GoogleLogin from "@/app/google/login";
 
 const anta = Anta({
   weight: "400",
@@ -99,8 +101,8 @@ export default function Home() {
             <Image
               src="/Logo.svg"
               alt="PSA Logo"
-              width={208}
-              height={208}
+              width={180}
+              height={180}
               priority
             />
           </div>
@@ -111,18 +113,28 @@ export default function Home() {
           PS<span className="text-pink-300">A</span>
         </h1>
         <h2
-          className={`text-2xl text-blue-200 mb-12 tracking-widest text-center ${anuphan.className}`}
+          className={`text-2xl text-blue-200 mb-5 tracking-widest text-center ${anuphan.className}`}
         >
           Problem Solving <span className="block text-pink-300">Assistant</span>
         </h2>
         {/* Buttons in a responsive layout */}
-        <div className="flex flex-col sm:flex-row text-center space-y-8 sm:space-y-0 sm:space-x-4">
+        <div className="flex flex-col sm:flex-row text-center mb-2 space-y-8 sm:space-y-0 sm:space-x-4">
           <Link href="/login">
-            <Button className="px-14 py-5 sm:px-12">Login</Button>
+            <Button className="px-14 py-3 sm:px-12">Login</Button>
           </Link>
           <Link href="/register">
-            <Button className="px-10 py-5">Register</Button>
+            <Button className="px-10 py-3">Register</Button>
           </Link>
+        </div>
+        <div className="flex flex-col sm:flex-col text-center space-y-8 sm:space-y-0 sm:space-x-4">
+          <h5 className={`text-lg text-white mb-5 mr-0`}>Or login with</h5>
+          <div className="flex flex-col sm:flex-row text-center justify-center space-y-8 sm:space-y-0 sm:space-x-4">
+                    <ButtonWithImage className="" imageSrc={"/google-icon.svg"} onClick={GoogleLogin}
+                style={{borderRadius: 18, boxShadow: 'rgba(0,0,0,0.25)', fontWeight: 'bold'}}></ButtonWithImage>
+
+                    <ButtonWithImage className="" imageSrc={"/github-icon.svg"}
+                style={{borderRadius: 18, boxShadow: 'rgba(0,0,0,0.25)', fontWeight: 'bold'}}></ButtonWithImage>
+          </div>
         </div>
       </div>
     </div>
